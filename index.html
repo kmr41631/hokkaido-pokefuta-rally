@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>北海道ポケふた巡り</title>
+
+<style>
+
+* {
+
+  box-sizing: border-box;
+
+}
+
+body {
+
+  margin: 0;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", sans-serif;
+
+  background: #f4f8fb;
+
+  color: #222;
+
+}
+
+header {
+
+  background: #168fe5;
+
+  color: white;
+
+  padding: 22px 18px;
+
+  text-align: center;
+
+}
+
+header h1 {
+
+  margin: 0;
+
+  font-size: 24px;
+
+}
+
+header p {
+
+  margin: 6px 0 0;
+
+  font-size: 13px;
+
+}
+
+.container {
+
+  padding: 16px;
+
+  max-width: 600px;
+
+  margin: auto;
+
+}
+
+.progress-box {
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  margin-bottom: 16px;
+
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+
+}
+
+.progress-title {
+
+  font-size: 14px;
+
+  color: #666;
+
+}
+
+.progress-number {
+
+  font-size: 28px;
+
+  font-weight: bold;
+
+  margin-top: 5px;
+
+}
+
+.progress-bar {
+
+  height: 10px;
+
+  background: #e5e5e5;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  margin-top: 10px;
+
+}
+
+.progress-fill {
+
+  height: 100%;
+
+  background: #168fe5;
+
+  width: 0%;
+
+}
+
+.spot {
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  margin-bottom: 16px;
+
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+
+}
+
+.spot h2 {
+
+  margin: 0 0 5px;
+
+  font-size: 20px;
+
+}
+
+.spot-number {
+
+  color: #888;
+
+  font-size: 13px;
+
+}
+
+.distance {
+
+  font-size: 17px;
+
+  margin: 14px 0;
+
+  font-weight: bold;
+
+}
+
+button {
+
+  width: 100%;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  margin-top: 8px;
+
+}
+
+.location-btn {
+
+  background: #168fe5;
+
+  color: white;
+
+}
+
+.stamp-btn {
+
+  background: #ffbf00;
+
+  color: #222;
+
+}
+
+.stamp-btn:disabled {
+
+  background: #ddd;
+
+  color: #999;
+
+}
+
+.photo-btn {
+
+  background: #222;
+
+  color: white;
+
+}
+
+.status {
+
+  text-align: center;
+
+  padding: 10px;
+
+  font-size: 14px;
+
+}
+
+.photo-preview {
+
+  width: 100%;
+
+  border-radius: 14px;
+
+  margin-top: 12px;
+
+  display: none;
+
+}
+
+.stamped {
+
+  border: 3px solid #168fe5;
+
+}
+
+.stamped-label {
+
+  color: #168fe5;
+
+  font-weight: bold;
+
+  margin-top: 8px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <h1>北海道ポケふた巡り</h1>
+
+  <p>DIGITAL STAMP RALLY</p>
+
+</header>
+
+<div class="container">
+
+  <div class="progress-box">
+
+    <div class="progress-title">スタンプ取得状況</div>
+
+    <div class="progress-number">
+
+      <span id="count">0</span> / 3
+
+    </div>
+
+    <div class="progress-bar">
+
+      <div class="progress-fill" id="progress"></div>
+
+    </div>
+
+  </div>
+
+  <button class="location-btn" onclick="getLocation()">
+
+    📍 現在地を確認
+
+  </button>
+
+  <div id="status" class="status">
+
+    現在地を確認してください
+
+  </div>
+
+  <div id="spots"></div>
+
+</div>
+
+<script>
+
+const spots = [
+
+  {
+
+    id: 1,
+
+    name: "テストスポット①",
+
+    lat: 43.0618,
+
+    lng: 141.3545
+
+  },
+
+  {
+
+    id: 2,
+
+    name: "テストスポット②",
+
+    lat: 43.0646,
+
+    lng: 141.3468
+
+  },
+
+  {
+
+    id: 3,
+
+    name: "テストスポット③",
+
+    lat: 43.0555,
+
+    lng: 141.3400
+
+  }
+
+];
+
+let currentLat = null;
+
+let currentLng = null;
+
+function getStamp(id) {
+
+  return localStorage.getItem("stamp_" + id) === "true";
+
+}
+
+function saveStamp(id) {
+
+  localStorage.setItem("stamp_" + id, "true");
+
+}
+
+function updateProgress() {
+
+  let count = 0;
+
+  spots.forEach(spot => {
+
+    if (getStamp(spot.id)) {
+
+      count++;
+
+    }
+
+  });
+
+  document.getElementById("count").textContent = count;
+
+  const percent = (count / spots.length) * 100;
+
+  document.getElementById("progress").style.width =
+
+    percent + "%";
+
+}
+
+function renderSpots() {
+
+  const container = document.getElementById("spots");
+
+  container.innerHTML = "";
+
+  spots.forEach(spot => {
+
+    const stamped = getStamp(spot.id);
+
+    const div = document.createElement("div");
+
+    div.className = "spot" + (stamped ? " stamped" : "");
+
+    div.innerHTML = `
+
+      <div class="spot-number">
+
+        No.${String(spot.id).padStart(3,"0")}
+
+      </div>
+
+      <h2>${spot.name}</h2>
+
+      <div class="distance" id="distance-${spot.id}">
+
+        📍 現在地未確認
+
+      </div>
+
+      ${
+
+        stamped
+
+        ? '<div class="stamped-label">⭐ スタンプ取得済み</div>'
+
+        : `
+
+          <button
+
+            class="stamp-btn"
+
+            id="stamp-${spot.id}"
+
+            disabled
+
+            onclick="getStamp(${spot.id})">
+
+            ⭐ スタンプを押す
+
+          </button>
+
+          <button
+
+            class="photo-btn"
+
+            onclick="selectPhoto(${spot.id})">
+
+            📸 写真を追加
+
+          </button>
+
+          <input
+
+            type="file"
+
+            accept="image/*"
+
+            capture="environment"
+
+            id="photo-${spot.id}"
+
+            style="display:none"
+
+            onchange="savePhoto(${spot.id})">
+
+          <img
+
+            id="preview-${spot.id}"
+
+            class="photo-preview">
+
+        `
+
+      }
+
+    `;
+
+    container.appendChild(div);
+
+    loadPhoto(spot.id);
+
+  });
+
+  updateProgress();
+
+}
+
+function getDistance(lat1, lng1, lat2, lng2) {
+
+  const R = 6371000;
+
+  const rad = Math.PI / 180;
+
+  const dLat = (lat2 - lat1) * rad;
+
+  const dLng = (lng2 - lng1) * rad;
+
+  const a =
+
+    Math.sin(dLat / 2) ** 2 +
+
+    Math.cos(lat1 * rad) *
+
+    Math.cos(lat2 * rad) *
+
+    Math.sin(dLng / 2) ** 2;
+
+  const c = 2 * Math.atan2(
+
+    Math.sqrt(a),
+
+    Math.sqrt(1 - a)
+
+  );
+
+  return R * c;
+
+}
+
+function getLocation() {
+
+  const status =
+
+    document.getElementById("status");
+
+  if (!navigator.geolocation) {
+
+    status.textContent =
+
+      "このiPhoneでは位置情報を取得できません。";
+
+    return;
+
+  }
+
+  status.textContent =
+
+    "📍 現在地を確認しています…";
+
+  navigator.geolocation.getCurrentPosition(
+
+    position => {
+
+      currentLat = position.coords.latitude;
+
+      currentLng = position.coords.longitude;
+
+      status.textContent =
+
+        "✅ 現在地を取得しました";
+
+      updateDistances();
+
+    },
+
+    error => {
+
+      status.textContent =
+
+        "位置情報を取得できませんでした。iPhoneの位置情報を許可してください。";
+
+    },
+
+    {
+
+      enableHighAccuracy: true,
+
+      timeout: 15000,
+
+      maximumAge: 0
+
+    }
+
+  );
+
+}
+
+function updateDistances() {
+
+  spots.forEach(spot => {
+
+    const distance = getDistance(
+
+      currentLat,
+
+      currentLng,
+
+      spot.lat,
+
+      spot.lng
+
+    );
+
+    const distanceElement =
+
+      document.getElementById(
+
+        "distance-" + spot.id
+
+      );
+
+    if (!distanceElement) return;
+
+    distanceElement.textContent =
+
+      "📍 ポケふたまで " +
+
+      Math.round(distance) +
+
+      "m";
+
+    const button =
+
+      document.getElementById(
+
+        "stamp-" + spot.id
+
+      );
+
+    if (!button) return;
+
+    if (distance <= 20) {
+
+      button.disabled = false;
+
+      button.textContent =
+
+        "⭐ スタンプを押す";
+
+      button.style.background =
+
+        "#ffbf00";
+
+    } else {
+
+      button.disabled = true;
+
+      button.textContent =
+
+        "🔒 20m以内で押せます";
+
+      button.style.background =
+
+        "#ddd";
+
+    }
+
+  });
+
+}
+
+function getStamp(id) {
+
+  if (
+
+    currentLat === null ||
+
+    currentLng === null
+
+  ) {
+
+    alert("先に現在地を確認してください。");
+
+    return;
+
+  }
+
+  const spot =
+
+    spots.find(s => s.id === id);
+
+  const distance =
+
+    getDistance(
+
+      currentLat,
+
+      currentLng,
+
+      spot.lat,
+
+      spot.lng
+
+    );
+
+  if (distance > 20) {
+
+    alert(
+
+      "まだ遠いです。\n現在地から " +
+
+      Math.round(distance) +
+
+      "m あります。"
+
+    );
+
+    return;
+
+  }
+
+  localStorage.setItem(
+
+    "stamp_" + id,
+
+    "true"
+
+  );
+
+  alert(
+
+    "🎉 スタンプGET！\n\n" +
+
+    spot.name
+
+  );
+
+  renderSpots();
+
+}
+
+function selectPhoto(id) {
+
+  document
+
+    .getElementById("photo-" + id)
+
+    .click();
+
+}
+
+function savePhoto(id) {
+
+  const input =
+
+    document.getElementById(
+
+      "photo-" + id
+
+    );
+
+  const file = input.files[0];
+
+  if (!file) return;
+
+  const reader =
+
+    new FileReader();
+
+  reader.onload = function(e) {
+
+    localStorage.setItem(
+
+      "photo_" + id,
+
+      e.target.result
+
+    );
+
+    loadPhoto(id);
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+function loadPhoto(id) {
+
+  const photo =
+
+    localStorage.getItem(
+
+      "photo_" + id
+
+    );
+
+  const preview =
+
+    document.getElementById(
+
+      "preview-" + id
+
+    );
+
+  if (photo && preview) {
+
+    preview.src = photo;
+
+    preview.style.display =
+
+      "block";
+
+  }
+
+}
+
+renderSpots();
+
+</script>
+
+</body>
+
+</html>
