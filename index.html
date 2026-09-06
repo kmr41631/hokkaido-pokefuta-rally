@@ -24,7 +24,7 @@ body {
 
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
 
-               "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
 
   background: #f4f7fb;
 
@@ -41,8 +41,6 @@ header {
   padding: 22px 15px;
 
   text-align: center;
-
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
 
 }
 
@@ -66,7 +64,7 @@ header p {
 
   max-width: 700px;
 
-  margin: 0 auto;
+  margin: auto;
 
   padding: 15px;
 
@@ -84,7 +82,7 @@ header p {
 
   text-align: center;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 
 }
 
@@ -118,9 +116,9 @@ header p {
 
   width: 0%;
 
-  background: linear-gradient(90deg, #38a8ff, #6c63ff);
+  background: linear-gradient(90deg,#38a8ff,#6c63ff);
 
-  transition: width 0.3s;
+  transition: width .3s;
 
 }
 
@@ -144,14 +142,6 @@ header p {
 
   margin-bottom: 15px;
 
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-
-}
-
-.location-btn:active {
-
-  transform: scale(0.98);
-
 }
 
 .status {
@@ -160,13 +150,15 @@ header p {
 
   border-radius: 12px;
 
-  padding: 13px;
+  padding: 14px;
 
   margin-bottom: 15px;
 
   text-align: center;
 
   font-size: 14px;
+
+  line-height: 1.6;
 
 }
 
@@ -180,7 +172,7 @@ header p {
 
   margin-bottom: 13px;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
 
 }
 
@@ -238,19 +230,39 @@ header p {
 
   color: #666;
 
-  line-height: 1.5;
-
 }
 
 .distance {
 
-  margin-top: 8px;
+  margin-top: 10px;
 
-  font-size: 13px;
+  font-size: 16px;
+
+  font-weight: bold;
 
   color: #4169e1;
 
-  font-weight: bold;
+}
+
+.distance.near {
+
+  color: #159447;
+
+}
+
+.distance.far {
+
+  color: #777;
+
+}
+
+.accuracy {
+
+  margin-top: 4px;
+
+  font-size: 12px;
+
+  color: #999;
 
 }
 
@@ -282,7 +294,7 @@ header p {
 
   border: none;
 
-  padding: 12px;
+  padding: 13px;
 
   margin-top: 10px;
 
@@ -344,7 +356,7 @@ header p {
 
   <h1>🏔️ 北海道ポケふた巡り</h1>
 
-  <p>北海道のポケふたを集めよう！</p>
+  <p>20m以内でスタンプGET！</p>
 
 </header>
 
@@ -368,7 +380,7 @@ header p {
 
   </div>
 
-  <button class="location-btn" onclick="getLocation()">
+  <button class="location-btn" onclick="startLocation()">
 
     📍 現在地を確認
 
@@ -376,7 +388,7 @@ header p {
 
   <div class="status" id="status">
 
-    現在地を確認すると、各ポケふたとの距離を表示します。
+    「現在地を確認」を押してください。
 
   </div>
 
@@ -392,121 +404,529 @@ header p {
 
 <script>
 
-/* =========================
+/* =========================================
 
    北海道ポケふた 50か所
 
-========================= */
+   緯度・経度は公式ポケふたページの
+
+   Google Mapリンクから取得
+
+========================================= */
 
 const spots = [
 
-  ["別海町", "北海道別海町"],
+  {
 
-  ["湧別町", "北海道湧別町中湧別中町3020番地の1"],
+    name: "別海町",
 
-  ["津別町", "北海道津別町共和127番地1"],
+    lat: 43.533277,
 
-  ["幌延町", "北海道幌延町"],
+    lng: 145.236951
 
-  ["厚沢部町", "北海道厚沢部町"],
+  },
 
-  ["由仁町", "北海道由仁町"],
+  {
 
-  ["砂川市", "北海道砂川市西1条北2丁目1番20号"],
+    name: "湧別町",
 
-  ["札幌市", "北海道札幌市"],
+    lat: 44.184688,
 
-  ["美瑛町", "北海道美瑛町"],
+    lng: 143.594819
 
-  ["美幌町", "北海道美幌町"],
+  },
 
-  ["猿払村", "北海道猿払村"],
+  {
 
-  ["木古内町", "北海道木古内町"],
+    name: "津別町",
 
-  ["歌志内市", "北海道歌志内市"],
+    lat: 43.69494344,
 
-  ["北見市", "北海道北見市"],
+    lng: 144.029683
 
-  ["室蘭市", "北海道室蘭市"],
+  },
 
-  ["当別町", "北海道当別町"],
+  {
 
-  ["えりも町", "北海道えりも町本町53-1"],
+    name: "幌延町",
 
-  ["斜里町", "北海道斜里町"],
+    lat: 45.040817,
 
-  ["東川町", "北海道東川町"],
+    lng: 141.861200
 
-  ["赤井川村", "北海道赤井川村"],
+  },
 
-  ["網走市", "北海道網走市"],
+  {
 
-  ["帯広市", "北海道帯広市"],
+    name: "厚沢部町",
 
-  ["釧路市", "北海道釧路市"],
+    lat: 41.916775,
 
-  ["旭川市", "北海道旭川市神楽4条6丁目1-12"],
+    lng: 140.216556
 
-  ["中標津町", "北海道中標津町"],
+  },
 
-  ["陸別町", "北海道陸別町"],
+  {
 
-  ["本別町", "北海道本別町北3丁目1-2"],
+    name: "由仁町",
 
-  ["登別市", "北海道登別市"],
+    lat: 43.011860,
 
-  ["根室市", "北海道根室市"],
+    lng: 141.786970
 
-  ["小樽市", "北海道小樽市"],
+  },
 
-  ["函館市", "北海道函館市青柳町17"],
+  {
 
-  ["剣淵町", "北海道剣淵町"],
+    name: "砂川市",
 
-  ["上富良野町", "北海道上富良野町"],
+    lat: 43.4930056,
 
-  ["三笠市", "北海道三笠市"],
+    lng: 141.9073953
 
-  ["苫小牧市", "北海道苫小牧市"],
+  },
 
-  ["足寄町", "北海道足寄町"],
+  {
 
-  ["新得町", "北海道新得町"],
+    name: "札幌市",
 
-  ["大空町", "北海道大空町"],
+    lat: 42.96615624,
 
-  ["遠軽町", "北海道遠軽町"],
+    lng: 141.1669585
 
-  ["紋別市", "北海道紋別市"],
+  },
 
-  ["豊富町", "北海道豊富町"],
+  {
 
-  ["稚内市", "北海道稚内市"],
+    name: "美瑛町",
 
-  ["天塩町", "北海道天塩町"],
+    lat: 43.591980,
 
-  ["比布町", "北海道比布町"],
+    lng: 142.463720
 
-  ["士別市", "北海道士別市"],
+  },
 
-  ["上ノ国町", "北海道上ノ国町"],
+  {
 
-  ["森町", "北海道森町"],
+    name: "美幌町",
 
-  ["洞爺湖町", "北海道洞爺湖町"],
+    lat: 43.836455,
 
-  ["恵庭市", "北海道恵庭市"],
+    lng: 144.105878
 
-  ["石狩市", "北海道石狩市"]
+  },
+
+  {
+
+    name: "猿払村",
+
+    lat: 45.329186,
+
+    lng: 142.177267
+
+  },
+
+  {
+
+    name: "木古内町",
+
+    lat: 41.678024,
+
+    lng: 140.435580
+
+  },
+
+  {
+
+    name: "歌志内市",
+
+    lat: 43.503206,
+
+    lng: 142.005914
+
+  },
+
+  {
+
+    name: "北見市",
+
+    lat: 43.753590,
+
+    lng: 143.500587
+
+  },
+
+  {
+
+    name: "室蘭市",
+
+    lat: 42.313837,
+
+    lng: 140.973986
+
+  },
+
+  {
+
+    name: "当別町",
+
+    lat: 43.17716187047716,
+
+    lng: 141.4485234
+
+  },
+
+  {
+
+    name: "えりも町",
+
+    lat: 42.017820,
+
+    lng: 143.146190
+
+  },
+
+  {
+
+    name: "斜里町",
+
+    lat: 44.068840,
+
+    lng: 144.990620
+
+  },
+
+  {
+
+    name: "東川町",
+
+    lat: 43.698404,
+
+    lng: 142.507039
+
+  },
+
+  {
+
+    name: "赤井川村",
+
+    lat: 43.051250,
+
+    lng: 140.844262
+
+  },
+
+  {
+
+    name: "網走市",
+
+    lat: 44.021949,
+
+    lng: 144.274423
+
+  },
+
+  {
+
+    name: "帯広市",
+
+    lat: 42.918205,
+
+    lng: 143.202563
+
+  },
+
+  {
+
+    name: "釧路市",
+
+    lat: 43.144027,
+
+    lng: 144.145490
+
+  },
+
+  {
+
+    name: "旭川市",
+
+    lat: 43.7595958,
+
+    lng: 142.3485094
+
+  },
+
+  {
+
+    name: "中標津町",
+
+    lat: 43.554566,
+
+    lng: 144.969609
+
+  },
+
+  {
+
+    name: "陸別町",
+
+    lat: 43.467701,
+
+    lng: 143.742721
+
+  },
+
+  {
+
+    name: "本別町",
+
+    lat: 43.125781,
+
+    lng: 143.613441
+
+  },
+
+  {
+
+    name: "登別市",
+
+    lat: 42.452786,
+
+    lng: 141.180999
+
+  },
+
+  {
+
+    name: "根室市",
+
+    lat: 43.335936,
+
+    lng: 145.598194
+
+  },
+
+  {
+
+    name: "小樽市",
+
+    lat: 43.195544,
+
+    lng: 140.998285
+
+  },
+
+  {
+
+    name: "函館市",
+
+    lat: 41.755926,
+
+    lng: 140.715684
+
+  },
+
+  {
+
+    name: "剣淵町",
+
+    lat: 44.1000303,
+
+    lng: 142.3593096
+
+  },
+
+  {
+
+    name: "上富良野町",
+
+    lat: 43.462246,
+
+    lng: 142.479068
+
+  },
+
+  {
+
+    name: "三笠市",
+
+    lat: 43.2613165,
+
+    lng: 141.9626673
+
+  },
+
+  {
+
+    name: "苫小牧市",
+
+    lat: 42.635755,
+
+    lng: 141.610090
+
+  },
+
+  {
+
+    name: "足寄町",
+
+    lat: 43.244229,
+
+    lng: 143.546753
+
+  },
+
+  {
+
+    name: "新得町",
+
+    lat: 43.082684,
+
+    lng: 142.832927
+
+  },
+
+  {
+
+    name: "大空町",
+
+    lat: 43.915555,
+
+    lng: 144.171370
+
+  },
+
+  {
+
+    name: "遠軽町",
+
+    lat: 44.021878,
+
+    lng: 143.497131
+
+  },
+
+  {
+
+    name: "紋別市",
+
+    lat: 44.334641,
+
+    lng: 143.372211
+
+  },
+
+  {
+
+    name: "豊富町",
+
+    lat: 45.103245,
+
+    lng: 141.778643
+
+  },
+
+  {
+
+    name: "稚内市",
+
+    lat: 45.417236,
+
+    lng: 141.677095
+
+  },
+
+  {
+
+    name: "天塩町",
+
+    lat: 44.884520,
+
+    lng: 141.747970
+
+  },
+
+  {
+
+    name: "比布町",
+
+    lat: 43.875033,
+
+    lng: 142.471699
+
+  },
+
+  {
+
+    name: "士別市",
+
+    lat: 44.175974,
+
+    lng: 142.392417
+
+  },
+
+  {
+
+    name: "上ノ国町",
+
+    lat: 41.808398,
+
+    lng: 140.095409
+
+  },
+
+  {
+
+    name: "森町",
+
+    lat: 42.108855,
+
+    lng: 140.572941
+
+  },
+
+  {
+
+    name: "洞爺湖町",
+
+    lat: 42.566111,
+
+    lng: 140.819072
+
+  },
+
+  {
+
+    name: "恵庭市",
+
+    lat: 42.897132,
+
+    lng: 141.585789
+
+  },
+
+  {
+
+    name: "石狩市",
+
+    lat: 43.585848,
+
+    lng: 141.423898
+
+  }
 
 ];
 
-/* =========================
+/* =========================================
 
-   スタンプ保存
+   設定
 
-========================= */
+========================================= */
+
+const STAMP_DISTANCE = 20;
+
+let currentPosition = null;
 
 let stamps = JSON.parse(
 
@@ -514,11 +934,11 @@ let stamps = JSON.parse(
 
 );
 
-/* =========================
+/* =========================================
 
    一覧表示
 
-========================= */
+========================================= */
 
 function renderSpots() {
 
@@ -527,10 +947,6 @@ function renderSpots() {
   container.innerHTML = "";
 
   spots.forEach((spot, index) => {
-
-    const name = spot[0];
-
-    const address = spot[1];
 
     const completed = stamps[index] === true;
 
@@ -544,7 +960,7 @@ function renderSpots() {
 
         <div class="spot-name">
 
-          ${index + 1}. ${name}
+          ${index + 1}. ${spot.name}
 
         </div>
 
@@ -556,15 +972,13 @@ function renderSpots() {
 
       </div>
 
-      <div class="address">
+      <div class="distance far" id="distance-${index}">
 
-        📍 ${address}
+        📍 現在地未確認
 
       </div>
 
-      <div class="distance" id="distance-${index}">
-
-        距離：現在地未確認
+      <div class="accuracy" id="accuracy-${index}">
 
       </div>
 
@@ -572,11 +986,11 @@ function renderSpots() {
 
         class="map-btn"
 
-        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}"
+        href="https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}"
 
         target="_blank">
 
-        🗺️ Googleマップで場所を見る
+        🗺️ Googleマップで案内
 
       </a>
 
@@ -586,9 +1000,15 @@ function renderSpots() {
 
         id="stamp-${index}"
 
-        onclick="manualStamp(${index})">
+        ${completed ? "disabled" : "disabled"}
 
-        ${completed ? "✅ スタンプ取得済み" : "📸 ポケふたを見つけた！"}
+        onclick="getStamp(${index})">
+
+        ${completed
+
+          ? "✅ スタンプ取得済み"
+
+          : "🔒 20m以内でスタンプGET"}
 
       </button>
 
@@ -602,65 +1022,13 @@ function renderSpots() {
 
 }
 
-/* =========================
+/* =========================================
 
-   スタンプ
+   GPS開始
 
-========================= */
+========================================= */
 
-function manualStamp(index) {
-
-  if (stamps[index]) {
-
-    alert("このポケふたは、すでにスタンプ取得済みです！");
-
-    return;
-
-  }
-
-  const ok = confirm(
-
-    spots[index][0] +
-
-    " のポケふたを見つけましたか？\n\n" +
-
-    "「OK」でスタンプを取得します。"
-
-  );
-
-  if (!ok) return;
-
-  stamps[index] = true;
-
-  localStorage.setItem(
-
-    "pokemonStamps",
-
-    JSON.stringify(stamps)
-
-  );
-
-  renderSpots();
-
-  alert(
-
-    "🎉 スタンプGET！\n\n" +
-
-    spots[index][0] +
-
-    " のポケふたを達成しました！"
-
-  );
-
-}
-
-/* =========================
-
-   現在地取得
-
-========================= */
-
-function getLocation() {
+function startLocation() {
 
   const status = document.getElementById("status");
 
@@ -668,7 +1036,7 @@ function getLocation() {
 
     status.textContent =
 
-      "この端末では現在地機能を利用できません。";
+      "❌ この端末ではGPSを利用できません。";
 
     return;
 
@@ -676,43 +1044,65 @@ function getLocation() {
 
   status.textContent =
 
-    "📍 現在地を確認しています…";
+    "📍 現在地を取得しています…";
 
   navigator.geolocation.getCurrentPosition(
 
     function(position) {
 
-      const lat = position.coords.latitude;
-
-      const lng = position.coords.longitude;
+      updatePosition(position);
 
       status.innerHTML =
 
         "✅ 現在地を確認しました！<br>" +
 
-        "緯度：" + lat.toFixed(6) +
+        "GPS精度：約 " +
 
-        "　経度：" + lng.toFixed(6);
+        Math.round(position.coords.accuracy) +
+
+        "m";
 
       /*
 
-       * 今回は住所をGoogleマップへ渡す方式のため、
-
-       * 各ポケふたの正確なGPS座標が確認できた場所以外は
-
-       * 距離を計算しません。
+       * 現在地を継続監視
 
        */
 
-      document.querySelectorAll(".distance")
+      navigator.geolocation.watchPosition(
 
-        .forEach(function(el) {
+        function(position) {
 
-          el.textContent =
+          updatePosition(position);
 
-            "📍 場所はGoogleマップで確認できます";
+          status.innerHTML =
 
-        });
+            "📍 GPS更新中<br>" +
+
+            "GPS精度：約 " +
+
+            Math.round(position.coords.accuracy) +
+
+            "m";
+
+        },
+
+        function(error) {
+
+          console.log(error);
+
+        },
+
+        {
+
+          enableHighAccuracy: true,
+
+          maximumAge: 5000,
+
+          timeout: 15000
+
+        }
+
+      );
 
     },
 
@@ -720,39 +1110,31 @@ function getLocation() {
 
       let message = "";
 
-      switch(error.code) {
+      if (error.code === 1) {
 
-        case 1:
+        message =
 
-          message =
+          "位置情報が許可されていません。\n" +
 
-            "現在地の利用が許可されていません。\n" +
+          "iPhoneの設定から位置情報を許可してください。";
 
-            "iPhoneの設定から位置情報を許可してください。";
+      } else if (error.code === 2) {
 
-          break;
+        message =
 
-        case 2:
+          "現在地を取得できませんでした。";
 
-          message =
+      } else if (error.code === 3) {
 
-            "現在地を取得できませんでした。";
+        message =
 
-          break;
+          "GPS取得がタイムアウトしました。";
 
-        case 3:
+      } else {
 
-          message =
+        message =
 
-            "現在地の取得がタイムアウトしました。";
-
-          break;
-
-        default:
-
-          message =
-
-            "現在地を取得できませんでした。";
+          "現在地を取得できませんでした。";
 
       }
 
@@ -776,41 +1158,361 @@ function getLocation() {
 
 }
 
-/* =========================
+/* =========================================
 
-   進捗表示
+   現在地更新
 
-========================= */
+========================================= */
+
+function updatePosition(position) {
+
+  currentPosition = {
+
+    lat: position.coords.latitude,
+
+    lng: position.coords.longitude,
+
+    accuracy: position.coords.accuracy
+
+  };
+
+  updateDistances();
+
+}
+
+/* =========================================
+
+   距離計算
+
+========================================= */
+
+function calculateDistance(
+
+  lat1,
+
+  lon1,
+
+  lat2,
+
+  lon2
+
+) {
+
+  const R = 6371000;
+
+  const rad = Math.PI / 180;
+
+  const dLat =
+
+    (lat2 - lat1) * rad;
+
+  const dLon =
+
+    (lon2 - lon1) * rad;
+
+  const a =
+
+    Math.sin(dLat / 2) *
+
+    Math.sin(dLat / 2) +
+
+    Math.cos(lat1 * rad) *
+
+    Math.cos(lat2 * rad) *
+
+    Math.sin(dLon / 2) *
+
+    Math.sin(dLon / 2);
+
+  const c =
+
+    2 *
+
+    Math.atan2(
+
+      Math.sqrt(a),
+
+      Math.sqrt(1 - a)
+
+    );
+
+  return R * c;
+
+}
+
+/* =========================================
+
+   各ポケふたとの距離を更新
+
+========================================= */
+
+function updateDistances() {
+
+  if (!currentPosition) return;
+
+  spots.forEach((spot, index) => {
+
+    const distance =
+
+      calculateDistance(
+
+        currentPosition.lat,
+
+        currentPosition.lng,
+
+        spot.lat,
+
+        spot.lng
+
+      );
+
+    const distanceElement =
+
+      document.getElementById(
+
+        "distance-" + index
+
+      );
+
+    const accuracyElement =
+
+      document.getElementById(
+
+        "accuracy-" + index
+
+      );
+
+    const button =
+
+      document.getElementById(
+
+        "stamp-" + index
+
+      );
+
+    if (!distanceElement || !button) {
+
+      return;
+
+    }
+
+    /* 距離表示 */
+
+    if (distance < 1000) {
+
+      distanceElement.textContent =
+
+        "📏 あと " +
+
+        Math.round(distance) +
+
+        "m";
+
+    } else {
+
+      distanceElement.textContent =
+
+        "📏 約 " +
+
+        (distance / 1000).toFixed(1) +
+
+        "km";
+
+    }
+
+    /* GPS精度 */
+
+    accuracyElement.textContent =
+
+      "GPS精度：約 " +
+
+      Math.round(currentPosition.accuracy) +
+
+      "m";
+
+    /* 20m判定 */
+
+    if (
+
+      distance <= STAMP_DISTANCE &&
+
+      !stamps[index]
+
+    ) {
+
+      distanceElement.className =
+
+        "distance near";
+
+      distanceElement.textContent =
+
+        "🎉 " +
+
+        Math.round(distance) +
+
+        "m！スタンプGETできます！";
+
+      button.disabled = false;
+
+      button.className =
+
+        "stamp-btn ready";
+
+      button.textContent =
+
+        "🎉 スタンプGET！";
+
+    } else {
+
+      distanceElement.className =
+
+        "distance far";
+
+      if (!stamps[index]) {
+
+        button.disabled = true;
+
+        button.className =
+
+          "stamp-btn";
+
+        button.textContent =
+
+          "🔒 20m以内でスタンプGET";
+
+      }
+
+    }
+
+  });
+
+}
+
+/* =========================================
+
+   スタンプ取得
+
+========================================= */
+
+function getStamp(index) {
+
+  if (!currentPosition) {
+
+    alert(
+
+      "まず「📍 現在地を確認」を押してください。"
+
+    );
+
+    return;
+
+  }
+
+  const spot = spots[index];
+
+  const distance =
+
+    calculateDistance(
+
+      currentPosition.lat,
+
+      currentPosition.lng,
+
+      spot.lat,
+
+      spot.lng
+
+    );
+
+  /* 20m以内か最終確認 */
+
+  if (distance > STAMP_DISTANCE) {
+
+    alert(
+
+      "まだ少し離れています。\n\n" +
+
+      "現在の距離：約 " +
+
+      Math.round(distance) +
+
+      "m\n\n" +
+
+      "20m以内まで近づいてください。"
+
+    );
+
+    return;
+
+  }
+
+  /* スタンプ保存 */
+
+  stamps[index] = true;
+
+  localStorage.setItem(
+
+    "pokemonStamps",
+
+    JSON.stringify(stamps)
+
+  );
+
+  renderSpots();
+
+  updateDistances();
+
+  alert(
+
+    "🎉 スタンプGET！\n\n" +
+
+    spot.name +
+
+    " のポケふたを達成しました！"
+
+  );
+
+}
+
+/* =========================================
+
+   進捗更新
+
+========================================= */
 
 function updateProgress() {
 
   const completed =
 
-    Object.values(stamps).filter(Boolean).length;
+    Object.values(stamps)
 
-  document.getElementById("count").textContent =
+      .filter(Boolean)
 
-    completed;
+      .length;
 
-  document.getElementById("total").textContent =
+  document.getElementById("count")
 
-    spots.length;
+    .textContent = completed;
+
+  document.getElementById("total")
+
+    .textContent = spots.length;
 
   const percent =
 
     (completed / spots.length) * 100;
 
-  document.getElementById("progress").style.width =
+  document.getElementById("progress")
 
-    percent + "%";
+    .style.width = percent + "%";
 
 }
 
-/* =========================
+/* =========================================
 
-   リセット
+   スタンプリセット
 
-========================= */
+========================================= */
 
 function resetStamps() {
 
@@ -822,21 +1524,35 @@ function resetStamps() {
 
   if (!ok) return;
 
-  localStorage.removeItem("pokemonStamps");
+  localStorage.removeItem(
+
+    "pokemonStamps"
+
+  );
 
   stamps = {};
 
   renderSpots();
 
-  alert("スタンプをリセットしました！");
+  if (currentPosition) {
+
+    updateDistances();
+
+  }
+
+  alert(
+
+    "🔄 スタンプを全部リセットしました！"
+
+  );
 
 }
 
-/* =========================
+/* =========================================
 
    起動
 
-========================= */
+========================================= */
 
 renderSpots();
 
