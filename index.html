@@ -981,19 +981,37 @@ function renderSpots() {
       <div class="accuracy" id="accuracy-${index}">
 
       </div>
+<div style="display:flex; gap:8px; margin-top:12px;">
 
-      <a
+  <a
 
-        class="map-btn"
+    class="map-btn"
 
-        href="https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}"
+    style="flex:1;"
 
-        target="_blank">
+    href="http://maps.apple.com/?daddr=${spot.lat},${spot.lng}&dirflg=d"
 
-        🗺️ Googleマップで案内
+    target="_blank">
 
-      </a>
+    🍎 Appleマップ
 
+  </a>
+
+  <a
+
+    class="map-btn"
+
+    style="flex:1;"
+
+    href="https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}"
+
+    target="_blank">
+
+    🗺️ Googleマップ
+
+  </a>
+
+</div>
       <button
 
         class="stamp-btn ${completed ? "done" : ""}"
