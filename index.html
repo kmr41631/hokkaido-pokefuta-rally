@@ -162,6 +162,94 @@ header p {
 
 }
 
+/* 検索・並び替え */
+
+.search-box {
+
+  background: white;
+
+  border-radius: 16px;
+
+  padding: 14px;
+
+  margin-bottom: 15px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.search-input {
+
+  width: 100%;
+
+  border: 2px solid #e1e5ee;
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  font-size: 16px;
+
+  outline: none;
+
+}
+
+.search-input:focus {
+
+  border-color: #4169e1;
+
+}
+
+.sort-buttons {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 10px;
+
+}
+
+.sort-btn {
+
+  flex: 1;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 11px 5px;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  background: #eeeeee;
+
+  color: #555;
+
+}
+
+.sort-btn.active {
+
+  background: #4169e1;
+
+  color: white;
+
+}
+
+.search-result {
+
+  margin-top: 10px;
+
+  text-align: center;
+
+  font-size: 13px;
+
+  color: #777;
+
+}
+
 .spot {
 
   background: white;
@@ -222,16 +310,6 @@ header p {
 
 }
 
-.address {
-
-  margin-top: 8px;
-
-  font-size: 13px;
-
-  color: #666;
-
-}
-
 .distance {
 
   margin-top: 10px;
@@ -266,7 +344,19 @@ header p {
 
 }
 
+.map-buttons {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 12px;
+
+}
+
 .map-btn {
+
+  flex: 1;
 
   display: block;
 
@@ -278,13 +368,19 @@ header p {
 
   color: white;
 
-  padding: 12px;
+  padding: 12px 5px;
 
   border-radius: 10px;
 
-  margin-top: 12px;
-
   font-weight: bold;
+
+  font-size: 13px;
+
+}
+
+.map-btn.apple {
+
+  background: #222;
 
 }
 
@@ -346,6 +442,20 @@ header p {
 
 }
 
+.no-result {
+
+  background: white;
+
+  border-radius: 16px;
+
+  padding: 30px 15px;
+
+  text-align: center;
+
+  color: #777;
+
+}
+
 </style>
 
 </head>
@@ -392,6 +502,58 @@ header p {
 
   </div>
 
+  <!-- 検索・並び替え -->
+
+  <div class="search-box">
+
+    <input
+
+      type="text"
+
+      id="searchInput"
+
+      class="search-input"
+
+      placeholder="🔎 ポケふたを検索（例：旭川）"
+
+      oninput="renderSpots()">
+
+    <div class="sort-buttons">
+
+      <button
+
+        id="sortDefault"
+
+        class="sort-btn active"
+
+        onclick="setSortMode('default')">
+
+        🔢 元の順番
+
+      </button>
+
+      <button
+
+        id="sortDistance"
+
+        class="sort-btn"
+
+        onclick="setSortMode('distance')">
+
+        📍 近い順
+
+      </button>
+
+    </div>
+
+    <div class="search-result" id="searchResult">
+
+      全50か所
+
+    </div>
+
+  </div>
+
   <div id="spots"></div>
 
   <button class="reset-btn" onclick="resetStamps()">
@@ -407,10 +569,6 @@ header p {
 /* =========================================
 
    北海道ポケふた 50か所
-
-   緯度・経度は公式ポケふたページの
-
-   Google Mapリンクから取得
 
 ========================================= */
 
@@ -928,11 +1086,35 @@ const STAMP_DISTANCE = 20;
 
 let currentPosition = null;
 
+let sortMode = "default";
+
 let stamps = JSON.parse(
 
   localStorage.getItem("pokemonStamps") || "{}"
 
 );
+
+/* =========================================
+
+   並び順変更
+
+========================================= */
+
+function setSortMode(mode) {
+
+  sortMode = mode;
+
+  document.getElementById("sortDefault")
+
+    .classList.toggle("active", mode === "default");
+
+  document.getElementById("sortDistance")
+
+    .classList.toggle("active", mode === "distance");
+
+  renderSpots();
+
+}
 
 /* =========================================
 
@@ -944,9 +1126,111 @@ function renderSpots() {
 
   const container = document.getElementById("spots");
 
+  const searchInput =
+
+    document.getElementById("searchInput");
+
+  const searchWord =
+
+    searchInput.value.trim().toLowerCase();
+
+  let displaySpots = spots.map((spot, index) => {
+
+    let distance = null;
+
+    if (currentPosition) {
+
+      distance = calculateDistance(
+
+        currentPosition.lat,
+
+        currentPosition.lng,
+
+        spot.lat,
+
+        spot.lng
+
+      );
+
+    }
+
+    return {
+
+      spot: spot,
+
+      index: index,
+
+      distance: distance
+
+    };
+
+  });
+
+  /* 検索 */
+
+  if (searchWord) {
+
+    displaySpots = displaySpots.filter(item =>
+
+      item.spot.name
+
+        .toLowerCase()
+
+        .includes(searchWord)
+
+    );
+
+  }
+
+  /* 近い順 */
+
+  if (sortMode === "distance" && currentPosition) {
+
+    displaySpots.sort((a, b) => {
+
+      return a.distance - b.distance;
+
+    });
+
+  }
+
+  /* 件数表示 */
+
+  document.getElementById("searchResult").textContent =
+
+    searchWord
+
+      ? displaySpots.length + "か所が見つかりました"
+
+      : "全" + displaySpots.length + "か所";
+
+  /* 検索結果なし */
+
+  if (displaySpots.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="no-result">
+
+        🔎 該当するポケふたがありません
+
+      </div>
+
+    `;
+
+    updateProgress();
+
+    return;
+
+  }
+
   container.innerHTML = "";
 
-  spots.forEach((spot, index) => {
+  displaySpots.forEach(item => {
+
+    const spot = item.spot;
+
+    const index = item.index;
 
     const completed = stamps[index] === true;
 
@@ -981,37 +1265,35 @@ function renderSpots() {
       <div class="accuracy" id="accuracy-${index}">
 
       </div>
-<div style="display:flex; gap:8px; margin-top:12px;">
 
-  <a
+      <div class="map-buttons">
 
-    class="map-btn"
+        <a
 
-    style="flex:1;"
+          class="map-btn apple"
 
-    href="http://maps.apple.com/?daddr=${spot.lat},${spot.lng}&dirflg=d"
+          href="http://maps.apple.com/?daddr=${spot.lat},${spot.lng}&dirflg=d"
 
-    target="_blank">
+          target="_blank">
 
-    🍎 Appleマップ
+          🍎 Appleマップ
 
-  </a>
+        </a>
 
-  <a
+        <a
 
-    class="map-btn"
+          class="map-btn"
 
-    style="flex:1;"
+          href="https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}"
 
-    href="https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}"
+          target="_blank">
 
-    target="_blank">
+          🗺️ Googleマップ
 
-    🗺️ Googleマップ
+        </a>
 
-  </a>
+      </div>
 
-</div>
       <button
 
         class="stamp-btn ${completed ? "done" : ""}"
@@ -1038,6 +1320,8 @@ function renderSpots() {
 
   updateProgress();
 
+  updateDistances();
+
 }
 
 /* =========================================
@@ -1048,7 +1332,9 @@ function renderSpots() {
 
 function startLocation() {
 
-  const status = document.getElementById("status");
+  const status =
+
+    document.getElementById("status");
 
   if (!navigator.geolocation) {
 
@@ -1079,12 +1365,6 @@ function startLocation() {
         Math.round(position.coords.accuracy) +
 
         "m";
-
-      /*
-
-       * 現在地を継続監視
-
-       */
 
       navigator.geolocation.watchPosition(
 
@@ -1194,7 +1474,23 @@ function updatePosition(position) {
 
   };
 
-  updateDistances();
+  /*
+
+    GPS取得後、近い順が選択されていれば
+
+    自動的に並び替える
+
+  */
+
+  if (sortMode === "distance") {
+
+    renderSpots();
+
+  } else {
+
+    updateDistances();
+
+  }
 
 }
 
@@ -1477,8 +1773,6 @@ function getStamp(index) {
   );
 
   renderSpots();
-
-  updateDistances();
 
   alert(
 
