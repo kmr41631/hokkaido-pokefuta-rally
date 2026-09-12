@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<title>RUSUTSU SNOW RIDE</title>
+
+<style>
+
+*{
+
+  box-sizing:border-box;
+
+  -webkit-user-select:none;
+
+  user-select:none;
+
+}
+
+body{
+
+  margin:0;
+
+  background:#07131d;
+
+  color:white;
+
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+
+  overflow:hidden;
+
+}
+
+#app{
+
+  width:100vw;
+
+  height:100vh;
+
+  position:relative;
+
+  overflow:hidden;
+
+}
+
+/* 空 */
+
+#sky{
+
+  position:absolute;
+
+  inset:0;
+
+  background:linear-gradient(#79c9ef 0%,#ccefff 55%,#eefaff 100%);
+
+}
+
+/* 山 */
+
+#mountain{
+
+  position:absolute;
+
+  left:-20%;
+
+  width:140%;
+
+  height:65%;
+
+  top:10%;
+
+  background:#dff5ff;
+
+  clip-path:polygon(
+
+    0 70%,10% 55%,18% 62%,28% 35%,
+
+    39% 58%,50% 20%,61% 55%,72% 38%,
+
+    84% 60%,94% 30%,100% 55%,100% 100%,0 100%
+
+  );
+
+}
+
+/* 木 */
+
+.tree{
+
+  position:absolute;
+
+  font-size:42px;
+
+  opacity:.8;
+
+}
+
+.t1{left:5%;top:35%}
+
+.t2{left:15%;top:52%}
+
+.t3{right:10%;top:42%}
+
+.t4{right:2%;top:58%}
+
+.t5{left:28%;top:60%}
+
+.t6{right:27%;top:55%}
+
+/* HUD */
+
+#hud{
+
+  position:absolute;
+
+  top:0;
+
+  left:0;
+
+  width:100%;
+
+  padding:18px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  z-index:20;
+
+}
+
+.panel{
+
+  background:rgba(0,0,0,.45);
+
+  backdrop-filter:blur(8px);
+
+  border-radius:14px;
+
+  padding:10px 14px;
+
+}
+
+.small{
+
+  font-size:12px;
+
+  opacity:.8;
+
+}
+
+.value{
+
+  font-size:20px;
+
+  font-weight:bold;
+
+}
+
+/* コース */
+
+#course{
+
+  position:absolute;
+
+  width:54vw;
+
+  height:160vh;
+
+  left:23vw;
+
+  top:-50vh;
+
+  background:#fff;
+
+  transform:rotate(0deg);
+
+  transition:transform .12s linear;
+
+  clip-path:polygon(
+
+    38% 0,
+
+    62% 0,
+
+    78% 10%,
+
+    55% 20%,
+
+    75% 30%,
+
+    43% 40%,
+
+    68% 50%,
+
+    40% 60%,
+
+    72% 70%,
+
+    50% 80%,
+
+    62% 90%,
+
+    45% 100%,
+
+    0 100%,
+
+    0 0
+
+  );
+
+  z-index:5;
+
+}
+
+/* コースの影 */
+
+#course:after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+
+    linear-gradient(
+
+      90deg,
+
+      rgba(150,190,210,.2),
+
+      transparent 30%,
+
+      transparent 70%,
+
+      rgba(150,190,210,.2)
+
+    );
+
+}
+
+/* 雪面ライン */
+
+.line{
+
+  position:absolute;
+
+  width:4px;
+
+  height:160px;
+
+  background:rgba(160,200,220,.35);
+
+  transform:rotate(8deg);
+
+}
+
+.l1{left:20%;top:10%}
+
+.l2{left:65%;top:25%;transform:rotate(-10deg)}
+
+.l3{left:30%;top:45%;transform:rotate(12deg)}
+
+.l4{left:70%;top:65%;transform:rotate(-12deg)}
+
+.l5{left:40%;top:82%;transform:rotate(8deg)}
+
+/* プレイヤー */
+
+#player{
+
+  position:absolute;
+
+  left:50%;
+
+  bottom:12%;
+
+  transform:translateX(-50%);
+
+  width:70px;
+
+  height:70px;
+
+  z-index:15;
+
+  font-size:58px;
+
+  text-align:center;
+
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.3));
+
+}
+
+/* 操作 */
+
+#controls{
+
+  position:absolute;
+
+  bottom:22px;
+
+  left:0;
+
+  width:100%;
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:18px;
+
+  z-index:30;
+
+}
+
+button{
+
+  border:0;
+
+  border-radius:20px;
+
+  width:145px;
+
+  height:65px;
+
+  background:rgba(0,0,0,.62);
+
+  color:white;
+
+  font-size:22px;
+
+  font-weight:bold;
+
+  backdrop-filter:blur(8px);
+
+}
+
+button:active{
+
+  transform:scale(.94);
+
+  background:rgba(30,100,150,.8);
+
+}
+
+/* スタート */
+
+#start{
+
+  position:absolute;
+
+  inset:0;
+
+  z-index:100;
+
+  background:linear-gradient(
+
+    rgba(0,25,45,.82),
+
+    rgba(0,10,20,.9)
+
+  );
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+
+  align-items:center;
+
+  text-align:center;
+
+  padding:30px;
+
+}
+
+#start h1{
+
+  font-size:38px;
+
+  margin:0 0 8px;
+
+}
+
+#start h2{
+
+  margin:0 0 25px;
+
+  font-size:22px;
+
+  color:#bcecff;
+
+}
+
+.info{
+
+  background:rgba(255,255,255,.1);
+
+  border-radius:18px;
+
+  padding:18px 25px;
+
+  margin-bottom:25px;
+
+  line-height:1.8;
+
+}
+
+#startBtn{
+
+  background:#168ac2;
+
+  width:230px;
+
+}
+
+/* ゴール */
+
+#goal{
+
+  display:none;
+
+  position:absolute;
+
+  inset:0;
+
+  z-index:90;
+
+  background:rgba(0,20,35,.9);
+
+  justify-content:center;
+
+  align-items:center;
+
+  flex-direction:column;
+
+  text-align:center;
+
+}
+
+#goal h1{
+
+  font-size:44px;
+
+  margin:0 0 15px;
+
+}
+
+#goal button{
+
+  margin-top:25px;
+
+  background:#168ac2;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="app">
+
+  <div id="sky"></div>
+
+  <div id="mountain"></div>
+
+  <div class="tree t1">🌲</div>
+
+  <div class="tree t2">🌲</div>
+
+  <div class="tree t3">🌲</div>
+
+  <div class="tree t4">🌲</div>
+
+  <div class="tree t5">🌲</div>
+
+  <div class="tree t6">🌲</div>
+
+  <div id="course">
+
+    <div class="line l1"></div>
+
+    <div class="line l2"></div>
+
+    <div class="line l3"></div>
+
+    <div class="line l4"></div>
+
+    <div class="line l5"></div>
+
+  </div>
+
+  <div id="hud">
+
+    <div class="panel">
+
+      <div class="small">COURSE</div>
+
+      <div class="value">ISOLA GRAND</div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="small">DISTANCE</div>
+
+      <div class="value">
+
+        <span id="distance">3500</span>m
+
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="small">SPEED</div>
+
+      <div class="value">
+
+        <span id="speed">0</span> km/h
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="player">🏂</div>
+
+  <div id="controls">
+
+    <button id="left">← TURN</button>
+
+    <button id="right">TURN →</button>
+
+  </div>
+
+  <div id="start">
+
+    <h1>🏂 RUSUTSU</h1>
+
+    <h2>ISOLA GRAND</h2>
+
+    <div class="info">
+
+      3,500m<br>
+
+      平均斜度 12°<br>
+
+      最大斜度 20°<br>
+
+      中級
+
+    </div>
+
+    <button id="startBtn">
+
+      ▶ 滑走開始
+
+    </button>
+
+  </div>
+
+  <div id="goal">
+
+    <h1>🏁 FINISH!</h1>
+
+    <div class="info">
+
+      <div>ISOLA GRAND</div>
+
+      <div>3,500m COMPLETE</div>
+
+      <div>TIME：<span id="finalTime">0</span>秒</div>
+
+      <div>SCORE：<span id="score">0</span></div>
+
+    </div>
+
+    <button onclick="location.reload()">
+
+      🔄 もう一度滑る
+
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+let playing = false;
+
+let distance = 3500;
+
+let speed = 0;
+
+let playerX = 0;
+
+let time = 0;
+
+let timer;
+
+const course = document.getElementById("course");
+
+const player = document.getElementById("player");
+
+const distanceText = document.getElementById("distance");
+
+const speedText = document.getElementById("speed");
+
+document.getElementById("startBtn").onclick = startGame;
+
+function startGame(){
+
+  document.getElementById("start").style.display="none";
+
+  playing = true;
+
+  speed = 22;
+
+  time = 0;
+
+  timer=setInterval(()=>{
+
+    if(!playing)return;
+
+    time++;
+
+    /*
+
+      疑似的な滑走距離
+
+      後で実際のコースデータに置き換える
+
+    */
+
+    distance -= speed * 0.45;
+
+    if(distance < 0){
+
+      distance=0;
+
+      finish();
+
+    }
+
+    /*
+
+      コースを上方向へ動かして
+
+      滑っているように見せる
+
+    */
+
+    let currentTop=parseFloat(
+
+      getComputedStyle(course).top
+
+    );
+
+    course.style.top=(currentTop+speed*.9)+"px";
+
+    /*
+
+      斜度によるスピード変化
+
+    */
+
+    let slope =
+
+      12 +
+
+      Math.sin(time/7)*5;
+
+    speed =
+
+      Math.max(
+
+        15,
+
+        Math.min(
+
+          42,
+
+          speed + (slope-12)*0.08
+
+        )
+
+      );
+
+    distanceText.textContent=Math.floor(distance);
+
+    speedText.textContent=Math.floor(speed);
+
+  },100);
+
+}
+
+/* 左ターン */
+
+document.getElementById("left").addEventListener(
+
+  "touchstart",
+
+  ()=>turn(-1)
+
+);
+
+document.getElementById("left").addEventListener(
+
+  "mousedown",
+
+  ()=>turn(-1)
+
+);
+
+/* 右ターン */
+
+document.getElementById("right").addEventListener(
+
+  "touchstart",
+
+  ()=>turn(1)
+
+);
+
+document.getElementById("right").addEventListener(
+
+  "mousedown",
+
+  ()=>turn(1)
+
+);
+
+function turn(direction){
+
+  if(!playing)return;
+
+  playerX += direction * 12;
+
+  playerX=Math.max(-70,Math.min(70,playerX));
+
+  player.style.transform=
+
+    "translateX(calc(-50% + "+playerX+"px)) rotate("+
+
+    direction*12+"deg)";
+
+  /*
+
+    ターン成功で少し加速
+
+  */
+
+  speed += 1.5;
+
+  if(speed>45)speed=45;
+
+}
+
+/* スワイプ操作 */
+
+let touchStartX=0;
+
+document.addEventListener(
+
+  "touchstart",
+
+  e=>{
+
+    touchStartX=e.touches[0].clientX;
+
+  }
+
+);
+
+document.addEventListener(
+
+  "touchend",
+
+  e=>{
+
+    if(!playing)return;
+
+    let endX=e.changedTouches[0].clientX;
+
+    let diff=endX-touchStartX;
+
+    if(Math.abs(diff)>35){
+
+      if(diff<0){
+
+        turn(-1);
+
+      }else{
+
+        turn(1);
+
+      }
+
+    }
+
+  }
+
+);
+
+function finish(){
+
+  playing=false;
+
+  clearInterval(timer);
+
+  document.getElementById("finalTime")
+
+    .textContent=time;
+
+  let finalScore=
+
+    Math.max(
+
+      1000,
+
+      Math.floor(
+
+        100000-
+
+        time*500+
+
+        speed*100
+
+      )
+
+    );
+
+  document.getElementById("score")
+
+    .textContent=finalScore.toLocaleString();
+
+  document.getElementById("goal")
+
+    .style.display="flex";
+
+}
+
+</script>
+
+</body>
+
+</html>
