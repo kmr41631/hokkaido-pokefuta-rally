@@ -456,7 +456,85 @@ header p {
 
 }
 
-</style>
+/* ===== ポケふたカード回転演出 ===== */
+
+.pokefuta-card {
+
+  perspective: 1000px;
+
+  margin-top: 15px;
+
+}
+
+.pokefuta-inner {
+
+  position: relative;
+
+  width: 100%;
+
+  min-height: 180px;
+
+  transform-style: preserve-3d;
+
+  transition: transform 0.8s ease;
+
+}
+
+.pokefuta-card.flipped .pokefuta-inner {
+
+  transform: rotateY(180deg);
+
+}
+
+.pokefuta-front,
+
+.pokefuta-back {
+
+  position: absolute;
+
+  width: 100%;
+
+  min-height: 180px;
+
+  backface-visibility: hidden;
+
+  border-radius: 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+}
+
+.pokefuta-back {
+
+  background: linear-gradient(135deg, #202a3a, #111827);
+
+  color: white;
+
+  font-size: 22px;
+
+  font-weight: bold;
+
+  border: 2px solid #6c63ff;
+
+}
+
+.pokefuta-front {
+
+  background: linear-gradient(135deg, #fff, #eef7ff);
+
+  color: #222;
+
+  transform: rotateY(180deg);
+
+  border: 2px solid #38a8ff;
+
+}</style>
 
 </head>
 
@@ -1255,7 +1333,15 @@ function renderSpots() {
         </div>
 
       </div>
+      <div class="poke-image ${completed ? "revealed" : "hidden"}">
 
+        <div class="poke-card">
+
+          ${completed ? "ポケふた GET!" : "？？？"}
+
+        </div>
+
+      </div>
       <div class="distance far" id="distance-${index}">
 
         📍 現在地未確認
