@@ -8,7 +8,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<meta name="theme-color" content="#1683ff">
+
 <title>北海道ポケふた巡り</title>
+
+<!-- Leaflet -->
+
+<link
+
+  rel="stylesheet"
+
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+
+/>
 
 <style>
 
@@ -18,29 +30,55 @@
 
 }
 
+html {
+
+  scroll-behavior: smooth;
+
+}
+
 body {
 
   margin: 0;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+  font-family:
 
-    "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    -apple-system,
 
-  background: #f4f7fb;
+    BlinkMacSystemFont,
+
+    "Helvetica Neue",
+
+    "Hiragino Kaku Gothic ProN",
+
+    "Yu Gothic",
+
+    sans-serif;
+
+  background: #f3f7fc;
 
   color: #222;
 
 }
 
+/* =========================
+
+   ヘッダー
+
+========================= */
+
 header {
 
-  background: linear-gradient(135deg, #38a8ff, #6c63ff);
+  background:
+
+    linear-gradient(135deg, #1683ff 0%, #5268ff 55%, #7658ff 100%);
 
   color: white;
 
-  padding: 22px 15px;
+  padding: 24px 16px 22px;
 
   text-align: center;
+
+  box-shadow: 0 3px 15px rgba(0,0,0,.12);
 
 }
 
@@ -48,7 +86,9 @@ header h1 {
 
   margin: 0;
 
-  font-size: 23px;
+  font-size: 24px;
+
+  letter-spacing: .5px;
 
 }
 
@@ -58,39 +98,71 @@ header p {
 
   font-size: 13px;
 
+  opacity: .95;
+
 }
+
+/* =========================
+
+   全体
+
+========================= */
 
 .container {
 
-  max-width: 700px;
+  width: 100%;
+
+  max-width: 760px;
 
   margin: auto;
 
-  padding: 15px;
+  padding: 14px;
 
 }
+
+/* =========================
+
+   進捗
+
+========================= */
 
 .progress-box {
 
   background: white;
 
-  border-radius: 16px;
+  border-radius: 18px;
 
   padding: 18px;
 
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 
-  text-align: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,.07);
 
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.progress-top {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+}
+
+.progress-title {
+
+  font-size: 14px;
+
+  font-weight: bold;
 
 }
 
 .progress-number {
 
-  font-size: 28px;
+  font-size: 25px;
 
-  font-weight: bold;
+  font-weight: 800;
 
   color: #4169e1;
 
@@ -100,9 +172,9 @@ header p {
 
   height: 12px;
 
-  background: #e5e5e5;
+  background: #e9edf3;
 
-  border-radius: 10px;
+  border-radius: 20px;
 
   overflow: hidden;
 
@@ -112,15 +184,37 @@ header p {
 
 .progress-fill {
 
-  height: 100%;
-
   width: 0%;
 
-  background: linear-gradient(90deg,#38a8ff,#6c63ff);
+  height: 100%;
 
-  transition: width .3s;
+  background:
+
+    linear-gradient(90deg, #21a1ff, #635bff);
+
+  border-radius: 20px;
+
+  transition: width .4s ease;
 
 }
+
+.progress-percent {
+
+  text-align: right;
+
+  margin-top: 6px;
+
+  font-size: 11px;
+
+  color: #888;
+
+}
+
+/* =========================
+
+   現在地
+
+========================= */
 
 .location-btn {
 
@@ -128,19 +222,25 @@ header p {
 
   border: none;
 
-  border-radius: 14px;
+  border-radius: 15px;
 
   padding: 16px;
 
   font-size: 17px;
 
-  font-weight: bold;
+  font-weight: 800;
 
   color: white;
 
-  background: #ff6b35;
+  background: #ff6638;
 
-  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(255,102,56,.2);
+
+}
+
+.location-btn:active {
+
+  transform: scale(.98);
 
 }
 
@@ -148,21 +248,251 @@ header p {
 
   background: white;
 
-  border-radius: 12px;
+  border-radius: 14px;
 
-  padding: 14px;
+  padding: 13px;
 
-  margin-bottom: 15px;
+  margin: 12px 0 14px;
 
   text-align: center;
 
-  font-size: 14px;
+  font-size: 13px;
 
   line-height: 1.6;
 
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+
 }
 
-/* 検索・並び替え */
+/* =========================
+
+   メインタブ
+
+========================= */
+
+.main-tabs {
+
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 14px;
+
+}
+
+.main-tab {
+
+  border: none;
+
+  border-radius: 13px;
+
+  padding: 13px 8px;
+
+  background: white;
+
+  color: #666;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+
+}
+
+.main-tab.active {
+
+  background: #4169e1;
+
+  color: white;
+
+}
+
+/* =========================
+
+   地図
+
+========================= */
+
+.map-section {
+
+  display: none;
+
+}
+
+.map-section.active {
+
+  display: block;
+
+}
+
+.map-box {
+
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 8px;
+
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+
+  overflow: hidden;
+
+}
+
+#map {
+
+  width: 100%;
+
+  height: 500px;
+
+  border-radius: 14px;
+
+}
+
+.map-info {
+
+  padding: 10px 5px 3px;
+
+  text-align: center;
+
+  font-size: 12px;
+
+  color: #777;
+
+}
+
+.map-legend {
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 14px;
+
+  padding: 8px 0 4px;
+
+  font-size: 12px;
+
+}
+
+.legend-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+}
+
+.legend-dot {
+
+  width: 11px;
+
+  height: 11px;
+
+  border-radius: 50%;
+
+}
+
+.legend-dot.done {
+
+  background: #21a85b;
+
+}
+
+.legend-dot.todo {
+
+  background: #999;
+
+}
+
+.legend-dot.me {
+
+  background: #1683ff;
+
+}
+
+/* =========================
+
+   一覧
+
+========================= */
+
+.list-section {
+
+  display: none;
+
+}
+
+.list-section.active {
+
+  display: block;
+
+}
+
+/* =========================
+
+   フィルター
+
+========================= */
+
+.filter-tabs {
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 7px;
+
+  margin-bottom: 12px;
+
+}
+
+.filter-tab {
+
+  border: none;
+
+  background: white;
+
+  color: #666;
+
+  padding: 12px 5px;
+
+  border-radius: 12px;
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  box-shadow: 0 2px 7px rgba(0,0,0,.06);
+
+}
+
+.filter-tab.active {
+
+  background: #222;
+
+  color: white;
+
+}
+
+.filter-count {
+
+  font-size: 10px;
+
+  opacity: .75;
+
+}
+
+/* =========================
+
+   検索
+
+========================= */
 
 .search-box {
 
@@ -170,11 +500,11 @@ header p {
 
   border-radius: 16px;
 
-  padding: 14px;
+  padding: 12px;
 
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 
 }
 
@@ -182,7 +512,7 @@ header p {
 
   width: 100%;
 
-  border: 2px solid #e1e5ee;
+  border: 2px solid #e4e8ef;
 
   border-radius: 12px;
 
@@ -204,9 +534,9 @@ header p {
 
   display: flex;
 
-  gap: 8px;
+  gap: 7px;
 
-  margin-top: 10px;
+  margin-top: 9px;
 
 }
 
@@ -218,15 +548,15 @@ header p {
 
   border-radius: 10px;
 
-  padding: 11px 5px;
+  padding: 10px 4px;
 
-  font-size: 13px;
+  background: #eee;
 
-  font-weight: bold;
+  color: #666;
 
-  background: #eeeeee;
+  font-size: 12px;
 
-  color: #555;
+  font-weight: 800;
 
 }
 
@@ -240,27 +570,33 @@ header p {
 
 .search-result {
 
-  margin-top: 10px;
-
   text-align: center;
 
-  font-size: 13px;
+  margin-top: 8px;
 
-  color: #777;
+  font-size: 12px;
+
+  color: #888;
 
 }
+
+/* =========================
+
+   カード
+
+========================= */
 
 .spot {
 
   background: white;
 
-  border-radius: 16px;
+  border-radius: 18px;
 
-  padding: 16px;
+  padding: 13px;
 
   margin-bottom: 13px;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.07);
 
 }
 
@@ -272,7 +608,7 @@ header p {
 
   align-items: center;
 
-  gap: 10px;
+  gap: 8px;
 
 }
 
@@ -280,15 +616,13 @@ header p {
 
   font-size: 18px;
 
-  font-weight: bold;
+  font-weight: 800;
 
 }
 
 .stamp {
 
-  font-size: 12px;
-
-  font-weight: bold;
+  white-space: nowrap;
 
   padding: 6px 9px;
 
@@ -298,27 +632,227 @@ header p {
 
   color: #777;
 
-  white-space: nowrap;
+  font-size: 11px;
+
+  font-weight: 800;
 
 }
 
 .stamp.completed {
 
-  background: #d9f7df;
+  background: #d8f7e2;
 
-  color: #159447;
+  color: #138a47;
 
 }
 
-.distance {
+/* =========================
 
-  margin-top: 10px;
+   ポケふたカード
 
-  font-size: 16px;
+========================= */
+
+.pokefuta-card {
+
+  width: 100%;
+
+  height: 235px;
+
+  margin-bottom: 13px;
+
+  perspective: 1200px;
+
+}
+
+.pokefuta-inner {
+
+  position: relative;
+
+  width: 100%;
+
+  height: 100%;
+
+  transition: transform .9s cubic-bezier(.2,.7,.2,1);
+
+  transform-style: preserve-3d;
+
+}
+
+.pokefuta-card.flipped .pokefuta-inner {
+
+  transform: rotateY(180deg);
+
+}
+
+.card-face {
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 17px;
+
+  overflow: hidden;
+
+  backface-visibility: hidden;
+
+  -webkit-backface-visibility: hidden;
+
+}
+
+/* 未取得側 */
+
+.card-back {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: white;
+
+  background:
+
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.08), transparent 30%),
+
+    linear-gradient(135deg, #182131, #090d15);
+
+  border: 2px solid #4d5d82;
+
+}
+
+.lock-icon {
+
+  font-size: 46px;
+
+  margin-bottom: 8px;
+
+}
+
+.lock-title {
+
+  font-size: 21px;
+
+  font-weight: 900;
+
+}
+
+.lock-sub {
+
+  margin-top: 6px;
+
+  font-size: 11px;
+
+  color: #aeb8cb;
+
+}
+
+/* 取得側 */
+
+.card-front {
+
+  transform: rotateY(180deg);
+
+  background:
+
+    linear-gradient(135deg, #f7fcff, #e8f4ff);
+
+  border: 2px solid #35a5ff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+.card-front-content {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 15px;
+
+  text-align: center;
+
+}
+
+.actual-image {
+
+  max-width: 180px;
+
+  max-height: 165px;
+
+  width: auto;
+
+  height: auto;
+
+  object-fit: contain;
+
+  border-radius: 12px;
+
+}
+
+.no-image {
+
+  font-size: 14px;
+
+  color: #777;
+
+  line-height: 1.6;
+
+}
+
+.official-link {
+
+  display: inline-block;
+
+  margin-top: 9px;
+
+  text-decoration: none;
+
+  background: #4169e1;
+
+  color: white;
+
+  padding: 9px 13px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
 
   font-weight: bold;
 
-  color: #4169e1;
+}
+
+/* =========================
+
+   距離
+
+========================= */
+
+.distance {
+
+  margin-top: 7px;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  color: #777;
 
 }
 
@@ -328,29 +862,29 @@ header p {
 
 }
 
-.distance.far {
-
-  color: #777;
-
-}
-
 .accuracy {
 
-  margin-top: 4px;
+  margin-top: 3px;
 
-  font-size: 12px;
+  font-size: 11px;
 
   color: #999;
 
 }
 
+/* =========================
+
+   地図ボタン
+
+========================= */
+
 .map-buttons {
 
   display: flex;
 
-  gap: 8px;
+  gap: 7px;
 
-  margin-top: 12px;
+  margin-top: 11px;
 
 }
 
@@ -364,17 +898,17 @@ header p {
 
   text-decoration: none;
 
-  background: #4285f4;
-
   color: white;
 
-  padding: 12px 5px;
+  background: #4285f4;
 
   border-radius: 10px;
 
-  font-weight: bold;
+  padding: 11px 4px;
 
-  font-size: 13px;
+  font-size: 12px;
+
+  font-weight: 800;
 
 }
 
@@ -384,71 +918,65 @@ header p {
 
 }
 
+/* =========================
+
+   GETボタン
+
+========================= */
+
 .stamp-btn {
 
   width: 100%;
 
   border: none;
 
+  border-radius: 11px;
+
   padding: 13px;
 
-  margin-top: 10px;
+  margin-top: 9px;
 
-  border-radius: 10px;
-
-  font-size: 15px;
-
-  font-weight: bold;
-
-  background: #ddd;
+  background: #e1e1e1;
 
   color: #888;
+
+  font-size: 14px;
+
+  font-weight: 900;
 
 }
 
 .stamp-btn.ready {
 
-  background: #4caf50;
+  background: #32a852;
 
   color: white;
+
+  box-shadow: 0 4px 12px rgba(50,168,82,.25);
 
 }
 
 .stamp-btn.done {
 
-  background: #eee;
+  background: #e9f7ee;
 
   color: #159447;
 
 }
 
-.reset-btn {
+/* =========================
 
-  width: 100%;
+   空結果
 
-  border: none;
-
-  background: #777;
-
-  color: white;
-
-  padding: 13px;
-
-  border-radius: 10px;
-
-  margin: 20px 0 30px;
-
-  font-size: 14px;
-
-}
+========================= */
 
 .no-result {
 
   background: white;
 
-  border-radius: 16px;
+  border-radius: 17px;
 
-  padding: 30px 15px;
+  padding: 35px 15px;
 
   text-align: center;
 
@@ -456,173 +984,237 @@ header p {
 
 }
 
-/* ===== ポケふたカード回転演出 ===== */
+/* =========================
 
-.pokefuta-card {
+   リセット
 
-  perspective: 1000px;
+========================= */
 
-  margin-top: 15px;
-
-}
-
-.pokefuta-inner {
-
-  position: relative;
+.reset-btn {
 
   width: 100%;
 
-  min-height: 180px;
+  border: none;
 
-  transform-style: preserve-3d;
+  border-radius: 11px;
 
-  transition: transform 0.8s ease;
-
-}
-
-.pokefuta-card.flipped .pokefuta-inner {
-
-  transform: rotateY(180deg);
-
-}
-
-.pokefuta-front,
-
-.pokefuta-back {
-
-  position: absolute;
-
-  width: 100%;
-
-  min-height: 180px;
-
-  backface-visibility: hidden;
-
-  border-radius: 16px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  text-align: center;
-
-}
-
-.pokefuta-back {
-
-  background: linear-gradient(135deg, #202a3a, #111827);
+  background: #777;
 
   color: white;
 
-  font-size: 22px;
+  padding: 13px;
 
-  font-weight: bold;
+  margin: 18px 0 30px;
 
-  border: 2px solid #6c63ff;
-
-}
-
-.pokefuta-front {
-
-  background: linear-gradient(135deg, #fff, #eef7ff);
-
-  color: #222;
-
-  transform: rotateY(180deg);
-
-  border: 2px solid #38a8ff;
-
-}/* ポケふた取得演出 */
-
-.poke-image {
-
-  width: 100%;
-
-  max-width: 320px;
-
-  height: 220px;
-
-  margin: 15px auto;
-
-  perspective: 1000px;
+  font-size: 13px;
 
 }
 
-.poke-card {
+/* =========================
+
+   Leaflet マーカー
+
+========================= */
+
+.custom-marker {
+
+  width: 30px;
+
+  height: 30px;
+
+  border-radius: 50% 50% 50% 0;
+
+  transform: rotate(-45deg);
+
+  border: 3px solid white;
+
+  box-shadow: 0 2px 7px rgba(0,0,0,.35);
+
+}
+
+.custom-marker-inner {
 
   width: 100%;
 
   height: 100%;
 
-  border-radius: 16px;
+  border-radius: 50%;
 
-  display: flex;
+}
 
-  align-items: center;
+.custom-marker.done {
+
+  background: #21a85b;
+
+}
+
+.custom-marker.todo {
+
+  background: #777;
+
+}
+
+.custom-marker.me {
+
+  background: #1683ff;
+
+  border-radius: 50%;
+
+  transform: none;
+
+}
+
+/* =========================
+
+   モーダル
+
+========================= */
+
+.modal {
+
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  background: rgba(0,0,0,.55);
+
+  align-items: flex-end;
 
   justify-content: center;
 
-  font-size: 24px;
+}
 
-  font-weight: bold;
+.modal.show {
 
-  transition: transform 0.8s ease;
-
-  transform-style: preserve-3d;
-
-  background: #222;
-
-  color: white;
+  display: flex;
 
 }
 
-.poke-image.hidden .poke-card {
+.modal-content {
 
-  transform: rotateY(180deg);
+  width: 100%;
 
-  background: #222;
-
-  color: white;
-
-}
-
-.poke-image.revealed .poke-card {
-
-  transform: rotateY(0deg);
+  max-width: 760px;
 
   background: white;
 
-  color: #333;
+  border-radius: 22px 22px 0 0;
+
+  padding: 20px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
 
 }
 
-.poke-image.reveal-animation .poke-card {
+.modal-close {
 
-  animation: pokeReveal 1s ease forwards;
+  width: 100%;
+
+  border: none;
+
+  border-radius: 11px;
+
+  padding: 13px;
+
+  background: #eee;
+
+  font-weight: bold;
+
+  margin-top: 12px;
 
 }
 
-@keyframes pokeReveal {
+.modal-title {
 
-  0% {
+  font-size: 21px;
 
-    transform: rotateY(180deg);
+  font-weight: 900;
+
+}
+
+.modal-text {
+
+  margin-top: 7px;
+
+  color: #777;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+}
+
+.modal-actions {
+
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 13px;
+
+}
+
+.modal-action {
+
+  flex: 1;
+
+  border: none;
+
+  border-radius: 11px;
+
+  padding: 12px 5px;
+
+  color: white;
+
+  background: #4169e1;
+
+  font-weight: bold;
+
+  text-decoration: none;
+
+  text-align: center;
+
+  font-size: 12px;
+
+}
+
+/* =========================
+
+   スマホ
+
+========================= */
+
+@media (max-width: 600px) {
+
+  #map {
+
+    height: 430px;
 
   }
 
-  100% {
+  .pokefuta-card {
 
-    transform: rotateY(0deg);
+    height: 215px;
 
   }
 
-}.poke-image.revealed .poke-card {
+  .actual-image {
 
-  animation: pokeReveal 1s ease forwards;
+    max-width: 165px;
 
-}</style>
+    max-height: 145px;
+
+  }
+
+}
+
+</style>
 
 </head>
 
@@ -632,19 +1224,25 @@ header p {
 
   <h1>🏔️ 北海道ポケふた巡り</h1>
 
-  <p>20m以内でスタンプGET！</p>
+  <p>北海道50か所を巡ってコンプリート！</p>
 
 </header>
 
 <div class="container">
 
+  <!-- 進捗 -->
+
   <div class="progress-box">
 
-    <div>🎉 スタンプ達成状況</div>
+    <div class="progress-top">
 
-    <div class="progress-number">
+      <div class="progress-title">🎉 ポケふた達成状況</div>
 
-      <span id="count">0</span> / <span id="total">50</span>
+      <div class="progress-number">
+
+        <span id="count">0</span> / <span id="total">50</span>
+
+      </div>
 
     </div>
 
@@ -654,9 +1252,21 @@ header p {
 
     </div>
 
+    <div class="progress-percent" id="progressPercent">
+
+      0%
+
+    </div>
+
   </div>
 
-  <button class="location-btn" onclick="startLocation()">
+  <!-- 現在地 -->
+
+  <button
+
+    class="location-btn"
+
+    onclick="startLocation()">
 
     📍 現在地を確認
 
@@ -668,85 +1278,323 @@ header p {
 
   </div>
 
-  <!-- 検索・並び替え -->
+  <!-- メインタブ -->
 
-  <div class="search-box">
+  <div class="main-tabs">
 
-    <input
+    <button
 
-      type="text"
+      id="tabMap"
 
-      id="searchInput"
+      class="main-tab active"
 
-      class="search-input"
+      onclick="switchMainTab('map')">
 
-      placeholder="🔎 ポケふたを検索（例：旭川）"
+      🗾 北海道マップ
 
-      oninput="renderSpots()">
+    </button>
 
-    <div class="sort-buttons">
+    <button
 
-      <button
+      id="tabList"
 
-        id="sortDefault"
+      class="main-tab"
 
-        class="sort-btn active"
+      onclick="switchMainTab('list')">
 
-        onclick="setSortMode('default')">
+      📸 ポケふた一覧
 
-        🔢 元の順番
-
-      </button>
-
-      <button
-
-        id="sortDistance"
-
-        class="sort-btn"
-
-        onclick="setSortMode('distance')">
-
-        📍 近い順
-
-      </button>
-
-    </div>
-
-    <div class="search-result" id="searchResult">
-
-      全50か所
-
-    </div>
+    </button>
 
   </div>
 
-  <div id="spots"></div>
+  <!-- ======================
 
-  <button class="reset-btn" onclick="resetStamps()">
+       地図
 
-    🔄 スタンプを全部リセット
+  ======================= -->
 
-  </button>
+  <section
+
+    id="mapSection"
+
+    class="map-section active">
+
+    <div class="map-box">
+
+      <div id="map"></div>
+
+      <div class="map-legend">
+
+        <div class="legend-item">
+
+          <span class="legend-dot done"></span>
+
+          訪問済み
+
+        </div>
+
+        <div class="legend-item">
+
+          <span class="legend-dot todo"></span>
+
+          未訪問
+
+        </div>
+
+        <div class="legend-item">
+
+          <span class="legend-dot me"></span>
+
+          現在地
+
+        </div>
+
+      </div>
+
+      <div class="map-info">
+
+        マーカーをタップするとポケふたの詳細を確認できます
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================
+
+       一覧
+
+  ======================= -->
+
+  <section
+
+    id="listSection"
+
+    class="list-section">
+
+    <!-- 行った / 行ってない -->
+
+    <div class="filter-tabs">
+
+      <button
+
+        id="filterAll"
+
+        class="filter-tab active"
+
+        onclick="setFilter('all')">
+
+        すべて
+
+        <div class="filter-count" id="allCount">50</div>
+
+      </button>
+
+      <button
+
+        id="filterTodo"
+
+        class="filter-tab"
+
+        onclick="setFilter('todo')">
+
+        行ってない
+
+        <div class="filter-count" id="todoCount">50</div>
+
+      </button>
+
+      <button
+
+        id="filterDone"
+
+        class="filter-tab"
+
+        onclick="setFilter('done')">
+
+        行った
+
+        <div class="filter-count" id="doneCount">0</div>
+
+      </button>
+
+    </div>
+
+    <!-- 検索 -->
+
+    <div class="search-box">
+
+      <input
+
+        id="searchInput"
+
+        class="search-input"
+
+        type="text"
+
+        placeholder="🔎 市町村を検索（例：旭川）"
+
+        oninput="renderSpots()"
+
+      >
+
+      <div class="sort-buttons">
+
+        <button
+
+          id="sortDefault"
+
+          class="sort-btn active"
+
+          onclick="setSortMode('default')">
+
+          🔢 元の順番
+
+        </button>
+
+        <button
+
+          id="sortDistance"
+
+          class="sort-btn"
+
+          onclick="setSortMode('distance')">
+
+          📍 近い順
+
+        </button>
+
+      </div>
+
+      <div
+
+        class="search-result"
+
+        id="searchResult">
+
+        全50か所
+
+      </div>
+
+    </div>
+
+    <div id="spots"></div>
+
+    <button
+
+      class="reset-btn"
+
+      onclick="resetStamps()">
+
+      🔄 スタンプを全部リセット
+
+    </button>
+
+  </section>
 
 </div>
 
+<!-- ======================
+
+     詳細モーダル
+
+====================== -->
+
+<div
+
+  id="detailModal"
+
+  class="modal"
+
+  onclick="closeModal(event)">
+
+  <div
+
+    class="modal-content"
+
+    onclick="event.stopPropagation()">
+
+    <div
+
+      class="modal-title"
+
+      id="modalTitle">
+
+    </div>
+
+    <div
+
+      class="modal-text"
+
+      id="modalText">
+
+    </div>
+
+    <div class="modal-actions">
+
+      <a
+
+        id="modalApple"
+
+        class="modal-action"
+
+        target="_blank">
+
+        🍎 Appleマップ
+
+      </a>
+
+      <a
+
+        id="modalGoogle"
+
+        class="modal-action"
+
+        target="_blank">
+
+        🗺️ Googleマップ
+
+      </a>
+
+    </div>
+
+    <button
+
+      class="modal-close"
+
+      onclick="closeModal()">
+
+      閉じる
+
+    </button>
+
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
 
-/* =========================================
+/* =====================================================
 
    北海道ポケふた 50か所
 
-========================================= */
+===================================================== */
 
 const spots = [
 
   {
 
     name: "別海町",
-image: "",
+
     lat: 43.533277,
 
-    lng: 145.236951
+    lng: 145.236951,
+
+    official: "https://local.pokemon.jp/manhole/desc/445/"
 
   },
 
@@ -756,7 +1604,9 @@ image: "",
 
     lat: 44.184688,
 
-    lng: 143.594819
+    lng: 143.594819,
+
+    official: "https://local.pokemon.jp/manhole/desc/444/"
 
   },
 
@@ -766,7 +1616,9 @@ image: "",
 
     lat: 43.69494344,
 
-    lng: 144.029683
+    lng: 144.029683,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -776,7 +1628,9 @@ image: "",
 
     lat: 45.040817,
 
-    lng: 141.861200
+    lng: 141.861200,
+
+    official: "https://local.pokemon.jp/manhole/desc/442/"
 
   },
 
@@ -786,7 +1640,9 @@ image: "",
 
     lat: 41.916775,
 
-    lng: 140.216556
+    lng: 140.216556,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -796,7 +1652,9 @@ image: "",
 
     lat: 43.011860,
 
-    lng: 141.786970
+    lng: 141.786970,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -806,7 +1664,9 @@ image: "",
 
     lat: 43.4930056,
 
-    lng: 141.9073953
+    lng: 141.9073953,
+
+    official: "https://local.pokemon.jp/manhole/desc/439/"
 
   },
 
@@ -816,7 +1676,9 @@ image: "",
 
     lat: 42.96615624,
 
-    lng: 141.1669585
+    lng: 141.1669585,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -826,7 +1688,9 @@ image: "",
 
     lat: 43.591980,
 
-    lng: 142.463720
+    lng: 142.463720,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -836,7 +1700,9 @@ image: "",
 
     lat: 43.836455,
 
-    lng: 144.105878
+    lng: 144.105878,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -846,7 +1712,9 @@ image: "",
 
     lat: 45.329186,
 
-    lng: 142.177267
+    lng: 142.177267,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -856,7 +1724,9 @@ image: "",
 
     lat: 41.678024,
 
-    lng: 140.435580
+    lng: 140.435580,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -866,7 +1736,9 @@ image: "",
 
     lat: 43.503206,
 
-    lng: 142.005914
+    lng: 142.005914,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -876,7 +1748,9 @@ image: "",
 
     lat: 43.753590,
 
-    lng: 143.500587
+    lng: 143.500587,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -886,7 +1760,9 @@ image: "",
 
     lat: 42.313837,
 
-    lng: 140.973986
+    lng: 140.973986,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -896,7 +1772,9 @@ image: "",
 
     lat: 43.17716187047716,
 
-    lng: 141.4485234
+    lng: 141.4485234,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -906,7 +1784,9 @@ image: "",
 
     lat: 42.017820,
 
-    lng: 143.146190
+    lng: 143.146190,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -916,7 +1796,9 @@ image: "",
 
     lat: 44.068840,
 
-    lng: 144.990620
+    lng: 144.990620,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -926,7 +1808,9 @@ image: "",
 
     lat: 43.698404,
 
-    lng: 142.507039
+    lng: 142.507039,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -936,7 +1820,9 @@ image: "",
 
     lat: 43.051250,
 
-    lng: 140.844262
+    lng: 140.844262,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -946,7 +1832,9 @@ image: "",
 
     lat: 44.021949,
 
-    lng: 144.274423
+    lng: 144.274423,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -956,7 +1844,9 @@ image: "",
 
     lat: 42.918205,
 
-    lng: 143.202563
+    lng: 143.202563,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -966,7 +1856,9 @@ image: "",
 
     lat: 43.144027,
 
-    lng: 144.145490
+    lng: 144.145490,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -976,7 +1868,9 @@ image: "",
 
     lat: 43.7595958,
 
-    lng: 142.3485094
+    lng: 142.3485094,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -986,7 +1880,9 @@ image: "",
 
     lat: 43.554566,
 
-    lng: 144.969609
+    lng: 144.969609,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -996,7 +1892,9 @@ image: "",
 
     lat: 43.467701,
 
-    lng: 143.742721
+    lng: 143.742721,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1006,7 +1904,9 @@ image: "",
 
     lat: 43.125781,
 
-    lng: 143.613441
+    lng: 143.613441,
+
+    official: "https://local.pokemon.jp/manhole/desc/191/"
 
   },
 
@@ -1016,7 +1916,9 @@ image: "",
 
     lat: 42.452786,
 
-    lng: 141.180999
+    lng: 141.180999,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1026,7 +1928,9 @@ image: "",
 
     lat: 43.335936,
 
-    lng: 145.598194
+    lng: 145.598194,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1036,7 +1940,9 @@ image: "",
 
     lat: 43.195544,
 
-    lng: 140.998285
+    lng: 140.998285,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1046,7 +1952,9 @@ image: "",
 
     lat: 41.755926,
 
-    lng: 140.715684
+    lng: 140.715684,
+
+    official: "https://local.pokemon.jp/manhole/desc/187/"
 
   },
 
@@ -1056,7 +1964,9 @@ image: "",
 
     lat: 44.1000303,
 
-    lng: 142.3593096
+    lng: 142.3593096,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1066,7 +1976,9 @@ image: "",
 
     lat: 43.462246,
 
-    lng: 142.479068
+    lng: 142.479068,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1076,7 +1988,9 @@ image: "",
 
     lat: 43.2613165,
 
-    lng: 141.9626673
+    lng: 141.9626673,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1086,7 +2000,9 @@ image: "",
 
     lat: 42.635755,
 
-    lng: 141.610090
+    lng: 141.610090,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1096,7 +2012,9 @@ image: "",
 
     lat: 43.244229,
 
-    lng: 143.546753
+    lng: 143.546753,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1106,7 +2024,9 @@ image: "",
 
     lat: 43.082684,
 
-    lng: 142.832927
+    lng: 142.832927,
+
+    official: "https://local.pokemon.jp/manhole/desc/382/"
 
   },
 
@@ -1116,7 +2036,9 @@ image: "",
 
     lat: 43.915555,
 
-    lng: 144.171370
+    lng: 144.171370,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1126,7 +2048,9 @@ image: "",
 
     lat: 44.021878,
 
-    lng: 143.497131
+    lng: 143.497131,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1136,7 +2060,9 @@ image: "",
 
     lat: 44.334641,
 
-    lng: 143.372211
+    lng: 143.372211,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1146,7 +2072,9 @@ image: "",
 
     lat: 45.103245,
 
-    lng: 141.778643
+    lng: 141.778643,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1156,7 +2084,9 @@ image: "",
 
     lat: 45.417236,
 
-    lng: 141.677095
+    lng: 141.677095,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1166,7 +2096,9 @@ image: "",
 
     lat: 44.884520,
 
-    lng: 141.747970
+    lng: 141.747970,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1176,7 +2108,9 @@ image: "",
 
     lat: 43.875033,
 
-    lng: 142.471699
+    lng: 142.471699,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1186,7 +2120,9 @@ image: "",
 
     lat: 44.175974,
 
-    lng: 142.392417
+    lng: 142.392417,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1196,7 +2132,9 @@ image: "",
 
     lat: 41.808398,
 
-    lng: 140.095409
+    lng: 140.095409,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1206,7 +2144,9 @@ image: "",
 
     lat: 42.108855,
 
-    lng: 140.572941
+    lng: 140.572941,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1216,7 +2156,9 @@ image: "",
 
     lat: 42.566111,
 
-    lng: 140.819072
+    lng: 140.819072,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1226,7 +2168,9 @@ image: "",
 
     lat: 42.897132,
 
-    lng: 141.585789
+    lng: 141.585789,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   },
 
@@ -1236,23 +2180,33 @@ image: "",
 
     lat: 43.585848,
 
-    lng: 141.423898
+    lng: 141.423898,
+
+    official: "https://local.pokemon.jp/manhole/hokkaido.html"
 
   }
 
 ];
 
-/* =========================================
+/* =====================================================
 
    設定
 
-========================================= */
+===================================================== */
 
 const STAMP_DISTANCE = 20;
 
 let currentPosition = null;
 
+let userMarker = null;
+
 let sortMode = "default";
+
+let currentFilter = "all";
+
+let map = null;
+
+let markers = [];
 
 let stamps = JSON.parse(
 
@@ -1260,37 +2214,359 @@ let stamps = JSON.parse(
 
 );
 
-/* =========================================
+/* =====================================================
 
-   並び順変更
+   初期化
 
-========================================= */
+===================================================== */
 
-function setSortMode(mode) {
+document.addEventListener("DOMContentLoaded", () => {
 
-  sortMode = mode;
+  document.getElementById("total").textContent =
 
-  document.getElementById("sortDefault")
+    spots.length;
 
-    .classList.toggle("active", mode === "default");
+  initMap();
 
-  document.getElementById("sortDistance")
+  updateCounts();
 
-    .classList.toggle("active", mode === "distance");
+  renderSpots();
+
+});
+
+/* =====================================================
+
+   地図初期化
+
+===================================================== */
+
+function initMap() {
+
+  map = L.map("map", {
+
+    zoomControl: true
+
+  }).setView(
+
+    [43.35, 142.8],
+
+    7
+
+  );
+
+  L.tileLayer(
+
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+    {
+
+      maxZoom: 19,
+
+      attribution:
+
+        '&copy; OpenStreetMap contributors'
+
+    }
+
+  ).addTo(map);
+
+  renderMapMarkers();
+
+}
+
+/* =====================================================
+
+   マーカー作成
+
+===================================================== */
+
+function createMarkerIcon(completed) {
+
+  const className =
+
+    completed
+
+      ? "custom-marker done"
+
+      : "custom-marker todo";
+
+  return L.divIcon({
+
+    className: "",
+
+    html:
+
+      `<div class="${className}">
+
+        <div class="custom-marker-inner"></div>
+
+      </div>`,
+
+    iconSize: [30, 42],
+
+    iconAnchor: [15, 42],
+
+    popupAnchor: [0, -40]
+
+  });
+
+}
+
+/* =====================================================
+
+   地図マーカー更新
+
+===================================================== */
+
+function renderMapMarkers() {
+
+  if (!map) return;
+
+  markers.forEach(marker => {
+
+    map.removeLayer(marker);
+
+  });
+
+  markers = [];
+
+  spots.forEach((spot, index) => {
+
+    const completed =
+
+      stamps[index] === true;
+
+    const marker =
+
+      L.marker(
+
+        [spot.lat, spot.lng],
+
+        {
+
+          icon:
+
+            createMarkerIcon(completed)
+
+        }
+
+      ).addTo(map);
+
+    marker.bindPopup(`
+
+      <div style="min-width:180px">
+
+        <strong style="font-size:16px">
+
+          ${index + 1}. ${spot.name}
+
+        </strong>
+
+        <div style="margin-top:6px">
+
+          ${
+
+            completed
+
+              ? "🟢 訪問済み"
+
+              : "⚪ 未訪問"
+
+          }
+
+        </div>
+
+        <button
+
+          onclick="openSpot(${index})"
+
+          style="
+
+            margin-top:8px;
+
+            width:100%;
+
+            padding:8px;
+
+            border:none;
+
+            border-radius:8px;
+
+            background:#4169e1;
+
+            color:white;
+
+            font-weight:bold;
+
+          ">
+
+          詳細を見る
+
+        </button>
+
+      </div>
+
+    `);
+
+    markers.push(marker);
+
+  });
+
+}
+
+/* =====================================================
+
+   メインタブ
+
+===================================================== */
+
+function switchMainTab(tab) {
+
+  const mapSection =
+
+    document.getElementById("mapSection");
+
+  const listSection =
+
+    document.getElementById("listSection");
+
+  const tabMap =
+
+    document.getElementById("tabMap");
+
+  const tabList =
+
+    document.getElementById("tabList");
+
+  if (tab === "map") {
+
+    mapSection.classList.add("active");
+
+    listSection.classList.remove("active");
+
+    tabMap.classList.add("active");
+
+    tabList.classList.remove("active");
+
+    setTimeout(() => {
+
+      map.invalidateSize();
+
+    }, 100);
+
+  } else {
+
+    mapSection.classList.remove("active");
+
+    listSection.classList.add("active");
+
+    tabMap.classList.remove("active");
+
+    tabList.classList.add("active");
+
+  }
+
+}
+
+/* =====================================================
+
+   フィルター
+
+===================================================== */
+
+function setFilter(filter) {
+
+  currentFilter = filter;
+
+  document
+
+    .getElementById("filterAll")
+
+    .classList.toggle(
+
+      "active",
+
+      filter === "all"
+
+    );
+
+  document
+
+    .getElementById("filterTodo")
+
+    .classList.toggle(
+
+      "active",
+
+      filter === "todo"
+
+    );
+
+  document
+
+    .getElementById("filterDone")
+
+    .classList.toggle(
+
+      "active",
+
+      filter === "done"
+
+    );
 
   renderSpots();
 
 }
 
-/* =========================================
+/* =====================================================
+
+   並び順
+
+===================================================== */
+
+function setSortMode(mode) {
+
+  sortMode = mode;
+
+  document
+
+    .getElementById("sortDefault")
+
+    .classList.toggle(
+
+      "active",
+
+      mode === "default"
+
+    );
+
+  document
+
+    .getElementById("sortDistance")
+
+    .classList.toggle(
+
+      "active",
+
+      mode === "distance"
+
+    );
+
+  renderSpots();
+
+}
+
+/* =====================================================
 
    一覧表示
 
-========================================= */
+===================================================== */
 
 function renderSpots() {
 
-  const container = document.getElementById("spots");
+  const container =
+
+    document.getElementById("spots");
 
   const searchInput =
 
@@ -1298,79 +2574,125 @@ function renderSpots() {
 
   const searchWord =
 
-    searchInput.value.trim().toLowerCase();
+    searchInput.value
 
-  let displaySpots = spots.map((spot, index) => {
+      .trim()
 
-    let distance = null;
+      .toLowerCase();
 
-    if (currentPosition) {
+  let displaySpots =
 
-      distance = calculateDistance(
+    spots.map((spot, index) => {
 
-        currentPosition.lat,
+      let distance = null;
 
-        currentPosition.lng,
+      if (currentPosition) {
 
-        spot.lat,
+        distance =
 
-        spot.lng
+          calculateDistance(
+
+            currentPosition.lat,
+
+            currentPosition.lng,
+
+            spot.lat,
+
+            spot.lng
+
+          );
+
+      }
+
+      return {
+
+        spot,
+
+        index,
+
+        distance
+
+      };
+
+    });
+
+  /* フィルター */
+
+  if (currentFilter === "todo") {
+
+    displaySpots =
+
+      displaySpots.filter(
+
+        item =>
+
+          stamps[item.index] !== true
 
       );
 
-    }
+  }
 
-    return {
+  if (currentFilter === "done") {
 
-      spot: spot,
+    displaySpots =
 
-      index: index,
+      displaySpots.filter(
 
-      distance: distance
+        item =>
 
-    };
+          stamps[item.index] === true
 
-  });
+      );
+
+  }
 
   /* 検索 */
 
   if (searchWord) {
 
-    displaySpots = displaySpots.filter(item =>
+    displaySpots =
 
-      item.spot.name
+      displaySpots.filter(item =>
 
-        .toLowerCase()
+        item.spot.name
 
-        .includes(searchWord)
+          .toLowerCase()
 
-    );
+          .includes(searchWord)
+
+      );
 
   }
 
   /* 近い順 */
 
-  if (sortMode === "distance" && currentPosition) {
+  if (
 
-    displaySpots.sort((a, b) => {
+    sortMode === "distance" &&
 
-      return a.distance - b.distance;
+    currentPosition
 
-    });
+  ) {
+
+    displaySpots.sort(
+
+      (a, b) =>
+
+        a.distance - b.distance
+
+    );
 
   }
 
-  /* 件数表示 */
+  document.getElementById(
 
-  document.getElementById("searchResult").textContent =
+    "searchResult"
 
-    searchWord
+  ).textContent =
 
-      ? displaySpots.length + "か所が見つかりました"
+    displaySpots.length +
 
-      : "全" + displaySpots.length + "か所";
-
-  /* 検索結果なし */
+    "か所";
 
   if (displaySpots.length === 0) {
 
@@ -1384,8 +2706,6 @@ function renderSpots() {
 
     `;
 
-    updateProgress();
-
     return;
 
   }
@@ -1398,27 +2718,118 @@ function renderSpots() {
 
     const index = item.index;
 
-    const completed = stamps[index] === true;
-const imageClass = completed ? "revealed" : "hidden";
-   
-    const div = document.createElement("div");
+    const completed =
+
+      stamps[index] === true;
+
+    const div =
+
+      document.createElement("div");
 
     div.className = "spot";
 
     div.innerHTML = `
-      <div class="poke-image ${imageClass}">
 
-        <div class="poke-card">
+      <!-- ポケふたカード -->
 
-          ${completed && spot.image
+      <div
 
-            ? `<img src="${spot.image}" alt="${spot.name}">`
+        class="pokefuta-card
 
-            : "？？？"}
+        ${completed ? "flipped" : ""}"
+
+        id="card-${index}">
+
+        <div class="pokefuta-inner">
+
+          <!-- 未取得面 -->
+
+          <div class="card-face card-back">
+
+            <div class="lock-icon">
+
+              🔒
+
+            </div>
+
+            <div class="lock-title">
+
+              未取得
+
+            </div>
+
+            <div class="lock-sub">
+
+              現地で20m以内になるとGETできます
+
+            </div>
+
+          </div>
+
+          <!-- 取得面 -->
+
+          <div class="card-face card-front">
+
+            <div class="card-front-content">
+
+              ${
+
+                completed
+
+                  ? `
+
+                    <div style="
+
+                      font-size:12px;
+
+                      color:#159447;
+
+                      font-weight:bold;
+
+                      margin-bottom:5px;">
+
+                      🎉 GET COMPLETE
+
+                    </div>
+
+                    <div style="
+
+                      font-size:22px;
+
+                      font-weight:900;">
+
+                      ${spot.name}
+
+                    </div>
+
+                    <a
+
+                      href="${spot.official}"
+
+                      target="_blank"
+
+                      class="official-link">
+
+                      📸 公式ポケふたを見る
+
+                    </a>
+
+                  `
+
+                  : ""
+
+              }
+
+            </div>
+
+          </div>
 
         </div>
 
       </div>
+
+      <!-- 市町村 -->
+
       <div class="spot-header">
 
         <div class="spot-name">
@@ -1427,22 +2838,47 @@ const imageClass = completed ? "revealed" : "hidden";
 
         </div>
 
-        <div class="stamp ${completed ? "completed" : ""}">
+        <div
 
-          ${completed ? "✅ 訪問済み" : "未訪問"}
+          class="stamp
+
+          ${completed ? "completed" : ""}">
+
+          ${
+
+            completed
+
+              ? "✅ 訪問済み"
+
+              : "未訪問"
+
+          }
 
         </div>
 
       </div>
-      <div class="distance far" id="distance-${index}">
+
+      <!-- 距離 -->
+
+      <div
+
+        class="distance far"
+
+        id="distance-${index}">
 
         📍 現在地未確認
 
       </div>
 
-      <div class="accuracy" id="accuracy-${index}">
+      <div
+
+        class="accuracy"
+
+        id="accuracy-${index}">
 
       </div>
+
+      <!-- マップ -->
 
       <div class="map-buttons">
 
@@ -1472,9 +2908,13 @@ const imageClass = completed ? "revealed" : "hidden";
 
       </div>
 
+      <!-- GET -->
+
       <button
 
-        class="stamp-btn ${completed ? "done" : ""}"
+        class="stamp-btn
+
+        ${completed ? "done" : ""}"
 
         id="stamp-${index}"
 
@@ -1482,11 +2922,15 @@ const imageClass = completed ? "revealed" : "hidden";
 
         onclick="getStamp(${index})">
 
-        ${completed
+        ${
 
-          ? "✅ スタンプ取得済み"
+          completed
 
-          : "🔒 20m以内でスタンプGET"}
+            ? "✅ スタンプ取得済み"
+
+            : "🔒 20m以内でスタンプGET"
+
+        }
 
       </button>
 
@@ -1496,17 +2940,15 @@ const imageClass = completed ? "revealed" : "hidden";
 
   });
 
-  updateProgress();
-
   updateDistances();
 
 }
 
-/* =========================================
+/* =====================================================
 
-   GPS開始
+   現在地取得
 
-========================================= */
+===================================================== */
 
 function startLocation() {
 
@@ -1530,7 +2972,7 @@ function startLocation() {
 
   navigator.geolocation.getCurrentPosition(
 
-    function(position) {
+    position => {
 
       updatePosition(position);
 
@@ -1540,13 +2982,17 @@ function startLocation() {
 
         "GPS精度：約 " +
 
-        Math.round(position.coords.accuracy) +
+        Math.round(
+
+          position.coords.accuracy
+
+        ) +
 
         "m";
 
       navigator.geolocation.watchPosition(
 
-        function(position) {
+        position => {
 
           updatePosition(position);
 
@@ -1556,13 +3002,17 @@ function startLocation() {
 
             "GPS精度：約 " +
 
-            Math.round(position.coords.accuracy) +
+            Math.round(
+
+              position.coords.accuracy
+
+            ) +
 
             "m";
 
         },
 
-        function(error) {
+        error => {
 
           console.log(error);
 
@@ -1572,7 +3022,7 @@ function startLocation() {
 
           enableHighAccuracy: true,
 
-          maximumAge: 5000,
+          maximumAge: 3000,
 
           timeout: 15000
 
@@ -1582,9 +3032,11 @@ function startLocation() {
 
     },
 
-    function(error) {
+    error => {
 
-      let message = "";
+      let message =
+
+        "現在地を取得できませんでした。";
 
       if (error.code === 1) {
 
@@ -1594,19 +3046,9 @@ function startLocation() {
 
           "iPhoneの設定から位置情報を許可してください。";
 
-      } else if (error.code === 2) {
+      }
 
-        message =
-
-          "現在地を取得できませんでした。";
-
-      } else if (error.code === 3) {
-
-        message =
-
-          "GPS取得がタイムアウトしました。";
-
-      } else {
+      if (error.code === 2) {
 
         message =
 
@@ -1614,7 +3056,17 @@ function startLocation() {
 
       }
 
-      status.textContent = "⚠️ " + message;
+      if (error.code === 3) {
+
+        message =
+
+          "GPS取得がタイムアウトしました。";
+
+      }
+
+      status.textContent =
+
+        "⚠️ " + message;
 
       alert(message);
 
@@ -1624,7 +3076,7 @@ function startLocation() {
 
       enableHighAccuracy: true,
 
-      timeout: 15000,
+      timeout: 20000,
 
       maximumAge: 0
 
@@ -1634,31 +3086,31 @@ function startLocation() {
 
 }
 
-/* =========================================
+/* =====================================================
 
    現在地更新
 
-========================================= */
+===================================================== */
 
 function updatePosition(position) {
 
   currentPosition = {
 
-    lat: position.coords.latitude,
+    lat:
 
-    lng: position.coords.longitude,
+      position.coords.latitude,
 
-    accuracy: position.coords.accuracy
+    lng:
+
+      position.coords.longitude,
+
+    accuracy:
+
+      position.coords.accuracy
 
   };
 
-  /*
-
-    GPS取得後、近い順が選択されていれば
-
-    自動的に並び替える
-
-  */
+  updateUserMarker();
 
   if (sortMode === "distance") {
 
@@ -1672,11 +3124,75 @@ function updatePosition(position) {
 
 }
 
-/* =========================================
+/* =====================================================
+
+   現在地マーカー
+
+===================================================== */
+
+function updateUserMarker() {
+
+  if (!map || !currentPosition) {
+
+    return;
+
+  }
+
+  if (userMarker) {
+
+    map.removeLayer(userMarker);
+
+  }
+
+  const icon =
+
+    L.divIcon({
+
+      className: "",
+
+      html:
+
+        `<div class="custom-marker me"></div>`,
+
+      iconSize: [30,30],
+
+      iconAnchor: [15,15]
+
+    });
+
+  userMarker =
+
+    L.marker(
+
+      [
+
+        currentPosition.lat,
+
+        currentPosition.lng
+
+      ],
+
+      {
+
+        icon
+
+      }
+
+    ).addTo(map);
+
+  userMarker.bindPopup(
+
+    "📍 現在地"
+
+  );
+
+}
+
+/* =====================================================
 
    距離計算
 
-========================================= */
+===================================================== */
 
 function calculateDistance(
 
@@ -1692,7 +3208,9 @@ function calculateDistance(
 
   const R = 6371000;
 
-  const rad = Math.PI / 180;
+  const rad =
+
+    Math.PI / 180;
 
   const dLat =
 
@@ -1732,159 +3250,173 @@ function calculateDistance(
 
 }
 
-/* =========================================
+/* =====================================================
 
-   各ポケふたとの距離を更新
+   距離表示
 
-========================================= */
+===================================================== */
 
 function updateDistances() {
 
-  if (!currentPosition) return;
+  if (!currentPosition) {
 
-  spots.forEach((spot, index) => {
+    return;
 
-    const distance =
+  }
 
-      calculateDistance(
+  spots.forEach(
 
-        currentPosition.lat,
+    (spot, index) => {
 
-        currentPosition.lng,
+      const distance =
 
-        spot.lat,
+        calculateDistance(
 
-        spot.lng
+          currentPosition.lat,
 
-      );
+          currentPosition.lng,
 
-    const distanceElement =
+          spot.lat,
 
-      document.getElementById(
+          spot.lng
 
-        "distance-" + index
+        );
 
-      );
+      const distanceElement =
 
-    const accuracyElement =
+        document.getElementById(
 
-      document.getElementById(
+          "distance-" + index
 
-        "accuracy-" + index
+        );
 
-      );
+      const accuracyElement =
 
-    const button =
+        document.getElementById(
 
-      document.getElementById(
+          "accuracy-" + index
 
-        "stamp-" + index
+        );
 
-      );
+      const button =
 
-    if (!distanceElement || !button) {
+        document.getElementById(
 
-      return;
+          "stamp-" + index
 
-    }
+        );
 
-    /* 距離表示 */
+      if (
 
-    if (distance < 1000) {
+        !distanceElement ||
 
-      distanceElement.textContent =
+        !button
 
-        "📏 あと " +
+      ) {
 
-        Math.round(distance) +
+        return;
+
+      }
+
+      if (distance < 1000) {
+
+        distanceElement.textContent =
+
+          "📏 あと " +
+
+          Math.round(distance) +
+
+          "m";
+
+      } else {
+
+        distanceElement.textContent =
+
+          "📏 約 " +
+
+          (distance / 1000)
+
+            .toFixed(1) +
+
+          "km";
+
+      }
+
+      accuracyElement.textContent =
+
+        "GPS精度：約 " +
+
+        Math.round(
+
+          currentPosition.accuracy
+
+        ) +
 
         "m";
 
-    } else {
+      if (
 
-      distanceElement.textContent =
+        distance <= STAMP_DISTANCE &&
 
-        "📏 約 " +
+        !stamps[index]
 
-        (distance / 1000).toFixed(1) +
+      ) {
 
-        "km";
+        distanceElement.className =
 
-    }
+          "distance near";
 
-    /* GPS精度 */
+        distanceElement.textContent =
 
-    accuracyElement.textContent =
+          "🎉 " +
 
-      "GPS精度：約 " +
+          Math.round(distance) +
 
-      Math.round(currentPosition.accuracy) +
+          "m！スタンプGETできます！";
 
-      "m";
-
-    /* 20m判定 */
-
-    if (
-
-      distance <= STAMP_DISTANCE &&
-
-      !stamps[index]
-
-    ) {
-
-      distanceElement.className =
-
-        "distance near";
-
-      distanceElement.textContent =
-
-        "🎉 " +
-
-        Math.round(distance) +
-
-        "m！スタンプGETできます！";
-
-      button.disabled = false;
-
-      button.className =
-
-        "stamp-btn ready";
-
-      button.textContent =
-
-        "🎉 スタンプGET！";
-
-    } else {
-
-      distanceElement.className =
-
-        "distance far";
-
-      if (!stamps[index]) {
-
-        button.disabled = true;
+        button.disabled = false;
 
         button.className =
 
-          "stamp-btn";
+          "stamp-btn ready";
 
         button.textContent =
 
-          "🔒 20m以内でスタンプGET";
+          "🎉 スタンプGET！";
+
+      } else {
+
+        distanceElement.className =
+
+          "distance far";
+
+        if (!stamps[index]) {
+
+          button.disabled = true;
+
+          button.className =
+
+            "stamp-btn";
+
+          button.textContent =
+
+            "🔒 20m以内でスタンプGET";
+
+        }
 
       }
 
     }
 
-  });
+  );
 
 }
 
-/* =========================================
+/* =====================================================
 
    スタンプ取得
 
-========================================= */
+===================================================== */
 
 function getStamp(index) {
 
@@ -1900,7 +3432,9 @@ function getStamp(index) {
 
   }
 
-  const spot = spots[index];
+  const spot =
+
+    spots[index];
 
   const distance =
 
@@ -1916,9 +3450,11 @@ function getStamp(index) {
 
     );
 
-  /* 20m以内か最終確認 */
+  if (
 
-  if (distance > STAMP_DISTANCE) {
+    distance > STAMP_DISTANCE
+
+  ) {
 
     alert(
 
@@ -1938,7 +3474,13 @@ function getStamp(index) {
 
   }
 
-  /* スタンプ保存 */
+  if (stamps[index]) {
+
+    return;
+
+  }
+
+  /* 保存 */
 
   stamps[index] = true;
 
@@ -1950,7 +3492,39 @@ function getStamp(index) {
 
   );
 
-  renderSpots();
+  /* まず現在のカードを回転 */
+
+  const card =
+
+    document.getElementById(
+
+      "card-" + index
+
+    );
+
+  if (card) {
+
+    card.classList.add(
+
+      "flipped"
+
+    );
+
+  }
+
+  /* 進捗 */
+
+  updateCounts();
+
+  renderMapMarkers();
+
+  /* 少し待ってから一覧を再描画 */
+
+  setTimeout(() => {
+
+    renderSpots();
+
+  }, 950);
 
   alert(
 
@@ -1964,55 +3538,205 @@ function getStamp(index) {
 
 }
 
-/* =========================================
+/* =====================================================
 
-   進捗更新
+   進捗
 
-========================================= */
+===================================================== */
 
-function updateProgress() {
+function updateCounts() {
 
   const completed =
 
-    Object.values(stamps)
+    spots.filter(
 
-      .filter(Boolean)
+      (_, index) =>
 
-      .length;
+        stamps[index] === true
 
-  document.getElementById("count")
+    ).length;
 
-    .textContent = completed;
+  const total =
 
-  document.getElementById("total")
+    spots.length;
 
-    .textContent = spots.length;
+  const todo =
+
+    total - completed;
+
+  document.getElementById(
+
+    "count"
+
+  ).textContent = completed;
+
+  document.getElementById(
+
+    "total"
+
+  ).textContent = total;
+
+  document.getElementById(
+
+    "doneCount"
+
+  ).textContent = completed;
+
+  document.getElementById(
+
+    "todoCount"
+
+  ).textContent = todo;
+
+  document.getElementById(
+
+    "allCount"
+
+  ).textContent = total;
 
   const percent =
 
-    (completed / spots.length) * 100;
+    total === 0
 
-  document.getElementById("progress")
+      ? 0
 
-    .style.width = percent + "%";
+      : (completed / total) * 100;
+
+  document.getElementById(
+
+    "progress"
+
+  ).style.width =
+
+    percent + "%";
+
+  document.getElementById(
+
+    "progressPercent"
+
+  ).textContent =
+
+    Math.round(percent) +
+
+    "% COMPLETE";
 
 }
 
-/* =========================================
+/* =====================================================
 
-   スタンプリセット
+   地図から詳細
 
-========================================= */
+===================================================== */
+
+function openSpot(index) {
+
+  const spot =
+
+    spots[index];
+
+  const completed =
+
+    stamps[index] === true;
+
+  document.getElementById(
+
+    "modalTitle"
+
+  ).textContent =
+
+    spot.name;
+
+  document.getElementById(
+
+    "modalText"
+
+  ).innerHTML =
+
+    completed
+
+      ? "🟢 このポケふたは訪問済みです。"
+
+      : "⚪ このポケふたはまだ未訪問です。";
+
+  document.getElementById(
+
+    "modalApple"
+
+  ).href =
+
+    `http://maps.apple.com/?daddr=${spot.lat},${spot.lng}&dirflg=d`;
+
+  document.getElementById(
+
+    "modalGoogle"
+
+  ).href =
+
+    `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}`;
+
+  document.getElementById(
+
+    "detailModal"
+
+  ).classList.add("show");
+
+}
+
+/* =====================================================
+
+   モーダル閉じる
+
+===================================================== */
+
+function closeModal(event) {
+
+  if (
+
+    event &&
+
+    event.target !==
+
+      document.getElementById(
+
+        "detailModal"
+
+      )
+
+  ) {
+
+    return;
+
+  }
+
+  document.getElementById(
+
+    "detailModal"
+
+  ).classList.remove("show");
+
+}
+
+/* =====================================================
+
+   リセット
+
+===================================================== */
 
 function resetStamps() {
 
-  const ok = confirm(
+  const ok =
 
-    "本当に全部のスタンプをリセットしますか？"
+    confirm(
 
-  );
+      "本当に全部のスタンプをリセットしますか？"
 
-  if (!ok) return;
+    );
+
+  if (!ok) {
+
+    return;
+
+  }
 
   localStorage.removeItem(
 
@@ -2022,13 +3746,11 @@ function resetStamps() {
 
   stamps = {};
 
+  updateCounts();
+
   renderSpots();
 
-  if (currentPosition) {
-
-    updateDistances();
-
-  }
+  renderMapMarkers();
 
   alert(
 
@@ -2037,14 +3759,6 @@ function resetStamps() {
   );
 
 }
-
-/* =========================================
-
-   起動
-
-========================================= */
-
-renderSpots();
 
 </script>
 
